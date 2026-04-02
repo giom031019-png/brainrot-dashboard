@@ -187,7 +187,8 @@
 
     async function loadData() {
       try {
-        const res = await fetch('http://localhost:3000/detections');
+        // ✅ Updated to use your Render backend
+        const res = await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
         const data = await res.json();
         document.getElementById('total').innerText = data.total;
         document.getElementById('best').innerText = data.bestFind ? `${data.bestFind.name} (${data.bestFind.gen})` : 'None';
