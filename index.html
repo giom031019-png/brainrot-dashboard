@@ -212,18 +212,10 @@
             if (expired) {
               oldContainer.appendChild(card);
             } else {
-              newThe reason your dashboard “vanished” is because the password script was trying to show the wrapper `<div>` before it existed in the DOM. That made the whole thing stay hidden. The fix is simple: move the password check **after** the wrapper markup, so the element exists when the script runs.  
+              newContainer.appendChild(card);
+The blank page issue comes from the password script running before the dashboard wrapper exists. In the last versions, the script was placed at the top of `<body>` and tried to show `#dashboard-wrapper` before it was defined, so nothing ever appeared. The fix is to move the password check **after** the wrapper markup, so the element exists when the script runs.
 
-Here’s the **final all‑together HTML** with everything working:
-
-- Password protection fixed (wrong password → only “Access Denied ❌”).  
-- Only 10m+ detections appear (HTML double‑checks, Lua already filters).  
-- Generations formatted (`m`, `k`, `b`).  
-- “Join Server” opens Roblox client directly.  
-- Cards update every refresh, flipping to “Owner left!” after 60 seconds.  
-- No duplicates, helpers tab works, detections persist if the bot stops.  
-- If bot stops, detections clear but “Best Brainrot Ever” stays.  
-- Cooler visuals with gradients, glow, hover effects.  
+Here’s the **final corrected HTML** with everything integrated:
 
 ```html
 <!DOCTYPE html>
@@ -443,3 +435,12 @@ Here’s the **final all‑together HTML** with everything working:
               newContainer.appendChild(card);
             }
           }
+
+          card.innerHTML = `
+            <h2>${d.name}</h2>
+            <p>Mutation: ${d.mutation}</p>
+            <p>Generation: ${formatGen(d.gen)}</p>
+            <p>Owner: ${d.owner}</p>
+            ${expired 
+              ? `<p style="color:#ff0066;font-weight:bold;">Owner left!</p>` 
+              : `<a class="join-btn" href="roblox://placeId=${119529250832489}&gameInstanceId=${d.jobId}">Join Server</a>`
