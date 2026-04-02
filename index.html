@@ -4,125 +4,31 @@
   <meta charset="UTF-8">
   <title>Brainrot Scanner Dashboard</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(270deg, #0d0d0d, #1a0033, #33001a);
-      background-size: 600% 600%;
-      animation: gradientShift 15s ease infinite;
-      color: #e0e0e0;
-    }
-    @keyframes gradientShift {
-      0% {background-position: 0% 50%;}
-      50% {background-position: 100% 50%;}
-      100% {background-position: 0% 50%;}
-    }
-    header {
-      text-align: center;
-      padding: 30px;
-      font-size: 40px;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 0 0 20px #ff0066, 0 0 40px #6600ff;
-      animation: pulseGlow 2s infinite alternate;
-    }
-    @keyframes pulseGlow {
-      from { text-shadow: 0 0 20px #ff0066; }
-      to { text-shadow: 0 0 40px #6600ff; }
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      background: rgba(0,0,0,0.7);
-      padding: 10px;
-    }
-    nav button {
-      margin: 0 10px;
-      padding: 10px 20px;
-      background: #00ccff;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    nav button:hover {
-      background: #ff0066;
-      color: #fff;
-      transform: scale(1.1);
-    }
-    .stats {
-      display: flex;
-      justify-content: space-around;
-      padding: 20px;
-      background: rgba(0,0,0,0.6);
-      border-bottom: 2px solid #444;
-    }
-    .stat {
-      text-align: center;
-      font-size: 22px;
-      color: #00ffcc;
-      transition: transform 0.3s;
-    }
-    .stat:hover {
-      transform: scale(1.2);
-    }
-    .tab { display: none; padding: 20px; }
-    .tab.active { display: block; }
-    .detections {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
-    }
-    .card {
-      background: rgba(20,20,20,0.9);
-      border: 2px solid #6600ff;
-      border-radius: 12px;
-      padding: 20px;
-      width: 320px;
-      box-shadow: 0 0 25px rgba(102,0,255,0.6);
-      transition: transform 0.4s, box-shadow 0.4s;
-      animation: fadeInUp 1s ease;
-    }
-    .card:hover {
-      transform: translateY(-10px) scale(1.05);
-      box-shadow: 0 0 40px rgba(255,0,102,0.9);
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .card h2 { margin: 0; color: #ff0066; font-size: 26px; }
-    .card p { margin: 6px 0; }
-    .join-btn {
-      display: block;
-      margin-top: 15px;
-      padding: 12px;
-      text-align: center;
-      background: #00ccff;
-      color: #000;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.3s, transform 0.3s;
-    }
-    .join-btn:hover {
-      background: #ff0066;
-      color: #fff;
-      transform: scale(1.05);
-    }
-    .helpers {
-      text-align: center;
-      font-size: 20px;
-      color: #ffcc00;
-      line-height: 1.8;
-    }
+    body {margin:0;font-family:'Segoe UI',sans-serif;background:linear-gradient(270deg,#0d0d0d,#1a0033,#33001a);background-size:600% 600%;animation:gradientShift 15s ease infinite;color:#e0e0e0;}
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    header{text-align:center;padding:30px;font-size:40px;font-weight:bold;color:#fff;text-shadow:0 0 20px #ff0066,0 0 40px #6600ff;animation:pulseGlow 2s infinite alternate}
+    @keyframes pulseGlow{from{text-shadow:0 0 20px #ff0066}to{text-shadow:0 0 40px #6600ff}}
+    nav{display:flex;justify-content:center;background:rgba(0,0,0,0.7);padding:10px}
+    nav button{margin:0 10px;padding:10px 20px;background:#00ccff;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:background .3s,transform .3s}
+    nav button:hover{background:#ff0066;color:#fff;transform:scale(1.1)}
+    .stats{display:flex;justify-content:space-around;padding:20px;background:rgba(0,0,0,0.6);border-bottom:2px solid #444}
+    .stat{text-align:center;font-size:22px;color:#00ffcc;transition:transform .3s}
+    .stat:hover{transform:scale(1.2)}
+    .tab{display:none;padding:20px}
+    .tab.active{display:block}
+    .detections{display:flex;flex-wrap:wrap;justify-content:center;gap:25px}
+    .card{background:rgba(20,20,20,0.9);border:2px solid #6600ff;border-radius:12px;padding:20px;width:320px;box-shadow:0 0 25px rgba(102,0,255,0.6);transition:transform .4s,box-shadow .4s;animation:fadeInUp 1s ease}
+    .card:hover{transform:translateY(-10px) scale(1.05);box-shadow:0 0 40px rgba(255,0,102,0.9)}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    .card h2{margin:0;color:#ff0066;font-size:26px}
+    .card p{margin:6px 0}
+    .join-btn{display:block;margin-top:15px;padding:12px;text-align:center;background:#00ccff;color:#000;text-decoration:none;border-radius:6px;font-weight:bold;transition:background .3s,transform .3s}
+    .join-btn:hover{background:#ff0066;color:#fff;transform:scale(1.05)}
+    .helpers{text-align:center;font-size:20px;color:#ffcc00;line-height:1.8}
   </style>
 </head>
 <body>
   <script>
-    // Password gate
     const password = prompt("Enter password to access:");
     if (password !== "macielissocute") {
       document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:20%;'>Access Denied ❌</h1>";
@@ -139,19 +45,11 @@
 
   <div id="dashboard" class="tab active">
     <div class="stats">
-      <div class="stat">
-        <div id="total">0</div>
-        <div>Total Brainrots Detected</div>
-      </div>
-      <div class="stat">
-        <div id="best">None</div>
-        <div>Best Brainrot Ever</div>
-      </div>
+      <div class="stat"><div id="total">0</div><div>Total Brainrots Detected</div></div>
+      <div class="stat"><div id="best">None</div><div>Best Brainrot Ever</div></div>
     </div>
-
     <h2>✨ New Detections</h2>
     <div class="detections" id="new-detections"></div>
-
     <h2>🕒 Old Detections</h2>
     <div class="detections" id="old-detections"></div>
   </div>
@@ -164,7 +62,9 @@
       gioyuhh - scripter<br>
       maico - helper<br><br>
       <strong>Best joiner out rn! - steal a brainrot modded!</strong><br>
-      Credits to maico for helping, f*** yuhR!
+      Credits to maico for helping, f*** yuhR!<br><br>
+      ❤️ Love you Loren<br>
+      ⭐ Maico the best
     </div>
   </div>
 
@@ -174,32 +74,42 @@
       document.getElementById(tabId).classList.add("active");
     }
 
+    function formatGen(gen) {
+      if (gen >= 1e9) return (gen/1e9).toFixed(1) + "b";
+      if (gen >= 1e6) return (gen/1e6).toFixed(1) + "m";
+      if (gen >= 1e3) return (gen/1e3).toFixed(1) + "k";
+      return gen.toString();
+    }
+
     async function loadData() {
       try {
         const res = await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
         const data = await res.json();
+
         document.getElementById('total').innerText = data.total;
-        document.getElementById('best').innerText = data.bestFind ? `${data.bestFind.name} (${data.bestFind.gen})` : 'None';
+        document.getElementById('best').innerText = data.bestFind ? `${data.bestFind.name} (${formatGen(data.bestFind.gen)})` : 'None';
 
         const newContainer = document.getElementById('new-detections');
         const oldContainer = document.getElementById('old-detections');
-        newContainer.innerHTML = '';
-        oldContainer.innerHTML = '';
 
         data.detections.slice().reverse().forEach(d => {
+          // Skip if card already exists
+          if (document.getElementById(d.jobId + d.name)) return;
+
           const age = (Date.now() - d.timestamp) / 1000;
           const expired = age > 60;
 
           const card = document.createElement('div');
           card.className = 'card';
+          card.id = d.jobId + d.name;
           card.innerHTML = `
             <h2>${d.name}</h2>
             <p>Mutation: ${d.mutation}</p>
-            <p>Generation: ${d.gen}</p>
+            <p>Generation: ${formatGen(d.gen)}</p>
             <p>Owner: ${d.owner}</p>
             ${expired 
               ? `<p style="color:#ff0066;font-weight:bold;">Owner left!</p>` 
-              : `<a class="join-btn" href="https://www.roblox.com/games/${119529250832489}?gameInstanceId=${d.jobId}" target="_blank">Join Server</a>`}
+              : `<a class="join-btn" href="roblox://placeId=${119529250832489}&gameInstanceId=${d.jobId}">Join Server</a>`}
           `;
 
           if (expired) {
@@ -212,6 +122,7 @@
         console.error("Error loading data:", err);
       }
     }
+
     setInterval(loadData, 3000);
     loadData();
   </script>
