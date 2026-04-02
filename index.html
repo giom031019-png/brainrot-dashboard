@@ -67,13 +67,8 @@
     .stat:hover {
       transform: scale(1.2);
     }
-    .tab {
-      display: none;
-      padding: 20px;
-    }
-    .tab.active {
-      display: block;
-    }
+    .tab { display: none; padding: 20px; }
+    .tab.active { display: block; }
     .detections {
       display: flex;
       flex-wrap: wrap;
@@ -98,14 +93,8 @@
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .card h2 {
-      margin: 0;
-      color: #ff0066;
-      font-size: 26px;
-    }
-    .card p {
-      margin: 6px 0;
-    }
+    .card h2 { margin: 0; color: #ff0066; font-size: 26px; }
+    .card p { margin: 6px 0; }
     .join-btn {
       display: block;
       margin-top: 15px;
@@ -187,7 +176,6 @@
 
     async function loadData() {
       try {
-        // ✅ Updated to use your Render backend
         const res = await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
         const data = await res.json();
         document.getElementById('total').innerText = data.total;
