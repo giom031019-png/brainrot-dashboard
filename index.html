@@ -68,6 +68,7 @@
   </div>
 
   <script>
+    // Password gate AFTER wrapper exists
     window.onload = function() {
       const password = prompt("Enter password to access:");
       if (password === "macielissocute") {
@@ -94,6 +95,7 @@
         const res = await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
         const data = await res.json();
 
+        // Update stats (never clear them)
         document.getElementById('total').innerText = data.total;
         document.getElementById('best').innerText = data.bestFind ? 
           `${data.bestFind.name} (${formatGen(data.bestFind.gen)})` : 'None';
@@ -101,7 +103,7 @@
         const newContainer = document.getElementById('new-detections');
         const oldContainer = document.getElementById('old-detections');
 
-        // Clear containers each refresh to avoid duplicates
+        // Clear only detections containers each refresh
         newContainer.innerHTML = "";
         oldContainer.innerHTML = "";
 
