@@ -2,42 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Brainrot Scanner Dashboard</title>
+  <title>Steal a Brainrot!</title>
   <style>
     body {
       margin:0;
       font-family:'Segoe UI',sans-serif;
-      background: radial-gradient(circle at top left, #0d0d0d, #1a0033, #33001a, #000);
-      background-size: 400% 400%;
-      animation: gradientShift 20s ease infinite;
-      color:#e0e0e0;
+      background:#111;
+      color:#eee;
     }
-    @keyframes gradientShift {0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-    header {text-align:center;padding:30px;font-size:42px;font-weight:bold;color:#fff;text-shadow:0 0 25px #ff0066,0 0 50px #6600ff;animation:pulseGlow 2s infinite alternate}
-    @keyframes pulseGlow {from{text-shadow:0 0 25px #ff0066}to{text-shadow:0 0 50px #00ccff}}
-    nav {display:flex;justify-content:center;background:rgba(0,0,0,0.8);padding:12px;border-bottom:2px solid #444}
-    nav button {margin:0 12px;padding:12px 24px;background:linear-gradient(45deg,#00ccff,#6600ff);border:none;border-radius:8px;font-weight:bold;cursor:pointer;color:#fff;transition:transform .3s,box-shadow .3s}
-    nav button:hover {transform:scale(1.1);box-shadow:0 0 20px #ff0066}
-    .stats {display:flex;justify-content:space-around;padding:20px;background:rgba(0,0,0,0.6);border-bottom:2px solid #444}
-    .stat {text-align:center;font-size:24px;color:#00ffcc;transition:transform .3s}
-    .stat:hover {transform:scale(1.2)}
+    header {
+      text-align:center;
+      padding:30px;
+      font-size:42px;
+      font-weight:bold;
+      color:#ff0066;
+      text-shadow:0 0 20px #6600ff;
+    }
+    nav {
+      display:flex;
+      justify-content:center;
+      background:#222;
+      padding:12px;
+    }
+    nav button {
+      margin:0 12px;
+      padding:10px 20px;
+      background:#6600ff;
+      border:none;
+      border-radius:6px;
+      font-weight:bold;
+      cursor:pointer;
+      color:#fff;
+    }
+    nav button:hover {background:#ff0066}
+    .stats {
+      display:flex;
+      justify-content:space-around;
+      padding:20px;
+      background:#1a1a1a;
+    }
+    .stat {text-align:center;font-size:20px;color:#00ffcc}
     .tab {display:none;padding:20px}
     .tab.active {display:block}
-    .detections {display:flex;flex-wrap:wrap;justify-content:center;gap:25px}
-    .card {background:rgba(20,20,20,0.95);border:2px solid #6600ff;border-radius:12px;padding:20px;width:320px;box-shadow:0 0 25px rgba(102,0,255,0.6);transition:transform .4s,box-shadow .4s;animation:fadeInUp 1s ease}
-    .card:hover {transform:translateY(-10px) scale(1.05);box-shadow:0 0 40px rgba(255,0,102,0.9)}
-    @keyframes fadeInUp {from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-    .card h2 {margin:0;color:#ff0066;font-size:26px}
-    .card p {margin:6px 0}
-    .join-btn {display:block;margin-top:15px;padding:12px;text-align:center;background:linear-gradient(45deg,#00ccff,#ff0066);color:#000;text-decoration:none;border-radius:6px;font-weight:bold;transition:transform .3s}
-    .join-btn:hover {transform:scale(1.05);color:#fff}
-    .helpers {text-align:center;font-size:20px;color:#ffcc00;line-height:1.8}
+    .detections {display:flex;flex-wrap:wrap;justify-content:center;gap:20px}
+    .card {
+      background:#222;
+      border:2px solid #6600ff;
+      border-radius:10px;
+      padding:15px;
+      width:300px;
+      box-shadow:0 0 15px rgba(102,0,255,0.6);
+    }
+    .card h2 {margin:0;color:#ff0066;font-size:22px}
+    .card p {margin:5px 0}
+    .join-btn {
+      display:block;
+      margin-top:10px;
+      padding:10px;
+      text-align:center;
+      background:#00ccff;
+      color:#000;
+      text-decoration:none;
+      border-radius:6px;
+      font-weight:bold;
+    }
+    .join-btn:hover {background:#ff0066;color:#fff}
+    .helpers {text-align:center;font-size:18px;color:#ffcc00;line-height:1.6}
     #dashboard-wrapper {display:none;}
   </style>
 </head>
 <body>
   <div id="dashboard-wrapper">
-    <header>🐉 Brainrot Scanner Dashboard</header>
+    <header>⚡ Steal a Brainrot! ⚡</header>
     <nav>
       <button onclick="showTab('dashboard')">Dashboard</button>
       <button onclick="showTab('helpers')">Helpers</button>
@@ -47,19 +83,19 @@
         <div class="stat"><div id="total">0</div><div>Total Brainrots Detected</div></div>
         <div class="stat"><div id="best">None</div><div>Best Brainrot Ever</div></div>
       </div>
-      <h2>✨ New Detections</h2>
+      <h2>New Detections</h2>
       <div class="detections" id="new-detections"></div>
-      <h2>🕒 Old Detections</h2>
+      <h2>Old Detections</h2>
       <div class="detections" id="old-detections"></div>
     </div>
     <div id="helpers" class="tab">
-      <h2>👥 Helper Credits</h2>
+      <h2>Helper Credits</h2>
       <div class="helpers">
         gioyuhh - owner<br>
         gioyuhh - botter<br>
         gioyuhh - scripter<br>
         maico - helper<br><br>
-        <strong>Best joiner out rn! - steal a brainrot modded!</strong><br>
+        Best joiner out rn! - steal a brainrot<br>
         Credits to maico for helping, f*** yuhR!<br><br>
         ❤️ Love you Loren<br>
         ⭐ Maico the best
@@ -68,11 +104,12 @@
   </div>
 
   <script>
-    // Password gate AFTER wrapper exists
     window.onload = function() {
       const password = prompt("Enter password to access:");
       if (password === "macielissocute") {
         document.getElementById("dashboard-wrapper").style.display = "block";
+        loadData();
+        setInterval(loadData, 3000);
       } else {
         document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:20%;'>Access Denied ❌</h1>";
       }
@@ -95,29 +132,27 @@
         const res = await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
         const data = await res.json();
 
-        // Update stats (never clear them)
-        document.getElementById('total').innerText = data.total;
+        // Always refresh stats
+        document.getElementById('total').innerText = data.total || 0;
         document.getElementById('best').innerText = data.bestFind ? 
           `${data.bestFind.name} (${formatGen(data.bestFind.gen)})` : 'None';
 
         const newContainer = document.getElementById('new-detections');
         const oldContainer = document.getElementById('old-detections');
 
-        // Clear only detections containers each refresh
         newContainer.innerHTML = "";
         oldContainer.innerHTML = "";
 
         if (!data.detections || data.detections.length === 0) return;
 
         data.detections.slice().reverse().forEach(d => {
-          if (d.gen < 10000000) return; // Only 10m+
+          if (d.gen < 10000000) return;
 
           const age = (Date.now() - d.timestamp) / 1000;
           const expired = age > 60;
 
           const card = document.createElement('div');
           card.className = 'card';
-          card.id = d.jobId + d.name;
           card.innerHTML = `
             <h2>${d.name}</h2>
             <p>Mutation: ${d.mutation}</p>
@@ -125,7 +160,7 @@
             <p>Owner: ${d.owner}</p>
             ${expired 
               ? `<p style="color:#ff0066;font-weight:bold;">Owner left!</p>` 
-              : `<a class="join-btn" href="roblox://placeId=${119529250832489}&gameInstanceId=${d.jobId}">Join Server</a>`}
+              : `<a class="join-btn" href="roblox://placeId=109983668079237&gameInstanceId=${d.jobId}">Join Server</a>`}
           `;
 
           if (expired) {
@@ -138,9 +173,6 @@
         console.error("Error loading data:", err);
       }
     }
-
-    setInterval(loadData, 3000);
-    loadData();
   </script>
 </body>
 </html>
