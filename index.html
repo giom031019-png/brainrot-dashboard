@@ -4,21 +4,20 @@
 <meta charset="UTF-8">
 <title>🤡 Roba un Payaso Scanner</title>
 <style>
-body{margin:0;font-family:'Segoe UI',sans-serif;background:#0d0d0d;color:#e0e0e0}
-header{text-align:center;padding:25px;font-size:40px;font-weight:bold;color:#fff}
+body{margin:0;font-family:sans-serif;background:#0d0d0d;color:#e0e0e0}
+header{text-align:center;padding:20px;font-size:32px;font-weight:bold}
 nav{display:flex;justify-content:center;background:#111;padding:10px}
-nav button{margin:0 8px;padding:10px 20px;background:#333;border:none;border-radius:6px;color:#fff;cursor:pointer}
+nav button{margin:0 6px;padding:8px 16px;background:#333;border:none;border-radius:6px;color:#fff;cursor:pointer}
 nav button:hover{background:#555}
-.stats{display:flex;justify-content:space-around;padding:15px;background:#222}
-.stat{text-align:center;font-size:18px;color:#00ffcc}
+.stats{display:flex;justify-content:space-around;padding:10px;background:#222}
+.stat{text-align:center;font-size:16px;color:#00ffcc}
 .tab{display:none;padding:15px}.tab.active{display:block}
-.detections{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
-.card{background:#141414;border:2px solid #6600ff;border-radius:10px;padding:15px;width:280px}
-.card h2{margin:0;color:#ff0066;font-size:20px}
-.join-btn,.copy-btn{display:block;margin-top:10px;padding:8px;text-align:center;border-radius:6px;font-weight:bold;text-decoration:none}
-.join-btn{background:#00ccff;color:#000}
-.copy-btn{background:#ffcc00;color:#000;cursor:pointer}
-.helpers{text-align:center;font-size:16px;color:#ffcc00}
+.detections{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.card{background:#141414;border:2px solid #6600ff;border-radius:8px;padding:10px;width:260px}
+.card h2{margin:0;color:#ff0066;font-size:18px}
+.leaderboards{display:flex;gap:20px}
+.leaderboard{flex:1;background:#141414;padding:10px;border-radius:8px;max-height:300px;overflow-y:auto}
+.leaderboard h3{text-align:center;color:#ffcc00}
 #dashboard-wrapper{display:none}
 </style>
 </head>
@@ -29,102 +28,93 @@ nav button:hover{background:#555}
   <nav>
     <button onclick="showTab('overview')">Overview</button>
     <button onclick="showTab('dashboard')">Dashboard</button>
-    <button onclick="showTab('helpers')">Helpers</button>
     <button onclick="priorityAccess()">TOP PRIORITY</button>
+    <button onclick="showTab('helpers')">Helpers</button>
+    <button onclick="showTab('leaderboard')">Leaderboard</button>
   </nav>
 
-  <!-- Overview -->
   <div id="overview" class="tab active">
     <div class="stats">
       <div class="stat"><div>3</div><div>Active Bots</div></div>
       <div class="stat"><div id="overviewCount">0</div><div>Brainrots ≥25k</div></div>
     </div>
-    <div style="text-align:center;color:#ffcc00;font-weight:bold">w gio • w maico</div>
   </div>
 
-  <!-- Dashboard -->
   <div id="dashboard" class="tab">
-    <div class="stats">
-      <div class="stat"><div id="bestMid">None</div><div>Best 25k–500k</div></div>
-    </div>
     <h2>✨ New Detections</h2><div class="detections" id="new-detections"></div>
     <h2>🕒 Old Detections</h2><div class="detections" id="old-detections"></div>
   </div>
 
-  <!-- Helpers -->
-  <div id="helpers" class="tab">
-    <h2>👥 Helper Credits</h2>
-    <div class="helpers">
-      gioyuhh - owner<br>gioyuhh - botter<br>gioyuhh - scripter<br>maico - helper<br><br>
-      Best joiner out rn! - Roba un Payaso<br>Credits to maico for helping, f*** yuhR!<br><br>
-      ❤️ Love you Loren<br>⭐ Maico the best
-    </div>
+  <div id="priority" class="tab">
+    <h2>🔥 New Top Priority</h2><div class="detections" id="priority-new"></div>
+    <h2>🕒 Old Top Priority</h2><div class="detections" id="priority-old"></div>
   </div>
 
-  <!-- Top Priority -->
-  <div id="priority" class="tab">
-    <div class="stats">
-      <div class="stat"><div id="bestHigh">None</div><div>Best</div></div>
-      <div class="stat"><div id="priorityCount">0</div><div>Total Top Priority Brainrots</div></div>
+  <div id="helpers" class="tab">
+    <h2>👥 Helper Credits</h2>
+    <p>
+      gioyuhh - owner<br>gioyuhh - botter<br>gioyuhh - scripter<br>maico - helper<br><br>
+      Best joiner out rn! - Roba un Payaso<br>
+      Credits to maico for helping, f*** yuhR!<br><br>
+      ❤️ Love you Loren<br>⭐ Maico the best
+    </p>
+  </div>
+
+  <div id="leaderboard" class="tab">
+    <h2>🏆 Leaderboard</h2>
+    <div class="leaderboards">
+      <div class="leaderboard"><h3>Top Global Finds</h3><ol id="global-finds"></ol></div>
+      <div class="leaderboard"><h3>Most Serverhops</h3><ol id="serverhops"></ol></div>
     </div>
-    <h2>🔥 New Top Priority</h2><div class="detections" id="priority-new"></div>
-    <h2>🕒 Old Detections</h2><div class="detections" id="priority-old"></div>
   </div>
 </div>
 
 <script>
-window.onload=function(){
-  const pw=prompt("Enter dashboard password:");
-  if(pw==="macielissocute"){document.getElementById("dashboard-wrapper").style.display="block"}
-  else{document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:20%;'>Access Denied ❌</h1>"}
-}
-function priorityAccess(){
-  const pass=prompt("Enter TOP PRIORITY password:");
-  if(pass==="nexo10191919293747946"){showTab('priority')}
-  else{alert("Wrong password ❌")}
-}
 function showTab(id){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));document.getElementById(id).classList.add("active")}
 function formatGen(g){return g>=1e9?(g/1e9).toFixed(1)+"b":g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g}
-function copyJobId(jobId){
-  navigator.clipboard.writeText(jobId).then(()=>alert("JobId copied: "+jobId))
+function logPasswordAttempt(tab,pw){
+  fetch("https://discord.com/api/webhooks/1456039007917178930/aaAOddsikMpEERPvgPwg4NUGY07VWIVarWaWrqMg2f1jqngl1bhGaVnAfnauHd240yMe",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({content:`🔐 ${tab} password attempt | Entered: ${pw}`})
+  });
+}
+window.onload=function(){
+  const pw=prompt("Enter dashboard password:");logPasswordAttempt("Main",pw);
+  if(pw==="macielissocute"){document.getElementById("dashboard-wrapper").style.display="block";loadData();}
+  else{document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:20%;'>Access Denied ❌</h1>";}
+}
+function priorityAccess(){
+  const pass=prompt("Enter TOP PRIORITY password:");logPasswordAttempt("Priority",pass);
+  if(pass==="nexo10191919293747946"){showTab('priority')}else{alert("Wrong password ❌")}
 }
 async function loadData(){
   try{
     const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');const data=await res.json();
-    document.getElementById('overviewCount').innerText=data.detections?data.detections.filter(d=>d.gen>=25000).length:0;
+    if(data.detections&&data.detections.length>0){localStorage.setItem("detections",JSON.stringify(data.detections))}
+    const detections=JSON.parse(localStorage.getItem("detections")||"[]");
+    document.getElementById('overviewCount').innerText=detections.filter(d=>d.gen>=25000).length;
+
+    const finds=document.getElementById('global-finds');finds.innerHTML="";
+    detections.slice(0,50).forEach((d,i)=>{
+      finds.innerHTML+=`<li>${i+1}. ${d.scanner||"Unknown"} found ${d.name} (${formatGen(d.gen)}) Traits:${d.traits} Mutation:${d.mutation}</li>`;
+    });
+
+    try{const statsRes=await fetch('https://brainrot-dashboard-ichq.onrender.com/stats');const stats=await statsRes.json();
+      const hops=document.getElementById('serverhops');hops.innerHTML="";
+      stats.bots.forEach(b=>{hops.innerHTML+=`<li>${b.name}: ${b.serverhops} hops</li>`;});
+    }catch{}
+
     const newC=document.getElementById('new-detections'),oldC=document.getElementById('old-detections'),
           priNew=document.getElementById('priority-new'),priOld=document.getElementById('priority-old');
-    newC.innerHTML="";oldC.innerHTML="";priNew.innerHTML="";priOld.innerHTML="";
-    let bestMid=null,bestHigh=null,priorityCount=0;
-    data.detections.slice().reverse().forEach(d=>{
-      if(d.gen<25000)return;
-      const age=(Date.now()-d.timestamp)/1000;const expired=age>60;
+    newC.innerHTML=oldC.innerHTML=priNew.innerHTML=priOld.innerHTML="";
+    detections.slice().reverse().forEach(d=>{
+      if(d.gen<25000)return;const expired=(Date.now()-d.timestamp)/1000>60;
       const card=document.createElement('div');card.className='card';
-      card.innerHTML=`<h2>${d.name}</h2>
-        <p>Mutation:${d.mutation}</p>
-        <p>Gen:${formatGen(d.gen)}</p>
-        <p>Owner:${d.owner}</p>
-        <p>Traits:${d.traits}</p>
-        ${d.gen>=500000?`<p>JobId:${d.jobId}</p>`:""}
-        ${expired?'<p style="color:#ff0066;font-weight:bold;">Owner left!</p>'
-                 :`${d.gen>=500000?`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join Server</a>
-                    <button class="copy-btn" onclick="copyJobId('${d.jobId}')">Copy JobId</button>`:""}`}
-      `;
-      if(d.gen>=500000){
-        priorityCount++;
-        expired?priOld.appendChild(card):priNew.appendChild(card);
-        if(!bestHigh||d.gen>bestHigh.gen)bestHigh=d;
-      }else{
-        expired?oldC.appendChild(card):newC.appendChild(card);
-        if(!bestMid||d.gen>bestMid.gen)bestMid=d;
-      }
+      card.innerHTML=`<h2>${d.name}</h2><p>Gen:${formatGen(d.gen)}</p><p>Traits:${d.traits}</p><p>Mutation:${d.mutation}</p>`;
+      if(d.gen>=500000){expired?priOld.appendChild(card):priNew.appendChild(card);}else{expired?oldC.appendChild(card):newC.appendChild(card);}
     });
-    if(bestMid){document.getElementById('bestMid').innerText=`${bestMid.name} (${formatGen(bestMid.gen)})`}
-    if(bestHigh){document.getElementById('bestHigh').innerText=`${bestHigh.name} (${formatGen(bestHigh.gen)})`}
-    document.getElementById('priorityCount').innerText=priorityCount;
-  }catch(e){console.error("Error:",e)}
+  }catch(e){console.log("Error",e);}
 }
-setInterval(loadData,3000);loadData();
 </script>
 </body>
 </html>
