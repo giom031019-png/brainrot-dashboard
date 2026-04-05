@@ -3,36 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <title>🤡 Roba un Payaso Scanner Dashboard</title>
+
 <style>
 body{margin:0;font-family:'Segoe UI',sans-serif;background:#0b0f14;color:#e0e0e0;overflow-x:hidden}
 canvas{position:fixed;top:0;left:0;z-index:-1}
-header{text-align:center;padding:20px;font-size:34px;color:#fff;opacity:.9}
+
+header{text-align:center;padding:20px;font-size:34px;color:#fff;text-shadow:0 0 15px #00ccff}
+
 nav{display:flex;justify-content:center;padding:10px}
-nav button{margin:0 8px;padding:10px 18px;background:#161b22;border:1px solid #222;border-radius:8px;color:#ccc;cursor:pointer;transition:.25s}
-nav button:hover{background:#222;transform:translateY(-2px)}
-.stats{display:flex;justify-content:space-around;padding:10px}
-.stat{text-align:center}
-.tab{display:none;padding:15px}.tab.active{display:block;animation:fade .5s}
-@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+nav button{margin:0 8px;padding:10px 18px;background:#161b22;border-radius:8px;color:#ccc;cursor:pointer}
+nav button:hover{background:#222}
+
+.tab{display:none;padding:15px}
+.tab.active{display:block}
+
+.stats{display:flex;justify-content:space-around}
+
 .detections{display:flex;flex-wrap:wrap;gap:15px;justify-content:center}
-.card{background:rgba(20,25,30,0.85);backdrop-filter:blur(10px);border-radius:12px;padding:12px;width:260px;transition:.3s;animation:pop .4s ease}
-@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
-.card:hover{transform:translateY(-6px)}
-.card h2{margin:0}
-.rarity{color:#8fd3ff}.priority{color:#ffd966;font-weight:bold}
-.join-btn{display:block;margin-top:10px;padding:8px;text-align:center;background:#1f2933;border-radius:6px;color:#fff;text-decoration:none}
-.join-btn:hover{background:#fff;color:#000}
-.leaderboards{display:flex;flex-wrap:wrap;gap:20px}
+
+.card{background:#14181f;border-radius:12px;padding:12px;width:260px}
+
+.join-btn,.copy-btn{
+display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
+}
+.join-btn{background:#1f2933;color:#fff;text-decoration:none}
+.copy-btn{background:#333;color:#ccc;cursor:pointer}
+
+.priority{color:#ffd966}
+.rarity{color:#8fd3ff}
+
+.leaderboards{display:flex;gap:20px}
 .leaderboard{flex:1;background:#14181f;padding:10px;border-radius:10px}
-.helpers{text-align:center;color:#aaa}
+
 #dashboard-wrapper{display:none}
 </style>
 </head>
+
 <body>
 
 <canvas id="rain"></canvas>
 
 <div id="dashboard-wrapper">
+
 <header>🤡 Roba un Payaso Scanner Dashboard</header>
 
 <nav>
@@ -44,188 +56,172 @@ nav button:hover{background:#222;transform:translateY(-2px)}
 
 <div id="dashboard" class="tab active">
 <div class="stats">
-<div class="stat"><div id="total">0</div><div>Total</div></div>
-<div class="stat"><div id="best">None</div><div>Best</div></div>
+<div><div id="total">0</div><div>Total</div></div>
+<div><div id="best">None</div><div>Best</div></div>
 </div>
 
 <h2>New</h2>
-<div class="detections" id="new-detections"></div>
+<div id="new-detections" class="detections"></div>
 
 <h2>Old</h2>
-<div class="detections" id="old-detections"></div>
+<div id="old-detections" class="detections"></div>
 </div>
 
 <div id="priority" class="tab">
 <h2>Top Priority</h2>
-<div class="detections" id="priority-new"></div>
-<div class="detections" id="priority-old"></div>
+<h3>New</h3>
+<div id="priority-new" class="detections"></div>
+<h3>Old</h3>
+<div id="priority-old" class="detections"></div>
 </div>
 
 <div id="leaderboard" class="tab">
 <div class="leaderboards">
-<div class="leaderboard"><h3>Top Global Finds</h3><ol id="global-finds"></ol></div>
-<div class="leaderboard"><h3>Top Priority Finds</h3><ol id="prio-finds"></ol></div>
-<div class="leaderboard"><h3>Top 10 Brainrots</h3><ol id="top-brainrots"></ol></div>
+<div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
+<div class="leaderboard"><h3>Priority</h3><ol id="prio-finds"></ol></div>
+<div class="leaderboard"><h3>Best</h3><ol id="top-brainrots"></ol></div>
 </div>
 </div>
 
-<div id="helpers" class="tab">
-<div class="helpers">gioyuhh • maico</div>
-</div>
+<div id="helpers" class="tab"><center>gioyuhh • maico</center></div>
+
 </div>
 
 <script>
 window.onload=()=>{
-  const pw=prompt("Enter password:");
-  if(pw==="macielissocute"){
-    document.getElementById("dashboard-wrapper").style.display="block";
-    loadData();
-    setInterval(loadData,3000);
-  }else{
-    document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
-  }
+const pw=prompt("Enter password:");
+if(pw==="macielissocute"){
+document.getElementById("dashboard-wrapper").style.display="block";
+loadData();
+setInterval(loadData,3000);
+}else{
+document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
+}
 };
 
 function showTab(id){
-  if(id==="priority"){
-    const pass=prompt("Enter Top Priority password:");
-    if(pass!=="11prio")return;
-  }
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+if(id==="priority"){
+const pass=prompt("Enter Top Priority password:");
+if(pass!=="11prio")return;
+}
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
 function formatGen(g){
-  return g>=1e9?(g/1e9).toFixed(1)+"b":
-         g>=1e6?(g/1e6).toFixed(1)+"m":
-         g>=1e3?(g/1e3).toFixed(1)+"k":g;
+return g>=1e6?(g/1e6).toFixed(1)+"m":
+g>=1e3?(g/1e3).toFixed(1)+"k":g;
 }
 
 function rarityLabel(g){
-  if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
-  if(g>=1e5)return"<span class='rarity'>Legendary</span>";
-  if(g>=25000)return"<span class='rarity'>Rare</span>";
-  return"<span class='rarity'>Common</span>";
+if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
+if(g>=1e5)return"<span class='rarity'>Legendary</span>";
+if(g>=25000)return"<span class='rarity'>Rare</span>";
+return"<span class='rarity'>Common</span>";
 }
 
-const shownJobs=new Set();
+function copyJob(id){
+navigator.clipboard.writeText(id);
+}
 
 async function loadData(){
-  try{
-    const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
-    const data=await res.json();
+try{
+const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
+const data=await res.json();
 
-    document.getElementById('total').innerText=data.total||0;
-    document.getElementById('best').innerText=data.bestFind?`${data.bestFind.name} (${formatGen(data.bestFind.gen)})`:"None";
+document.getElementById('total').innerText=data.total||0;
+document.getElementById('best').innerText=data.bestFind?
+data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
 
-    if(!data.detections)return;
+const newC=document.getElementById('new-detections');
+const oldC=document.getElementById('old-detections');
+const pNew=document.getElementById('priority-new');
+const pOld=document.getElementById('priority-old');
 
-    // Leaderboards
-    const gList=document.getElementById('global-finds');
-    const pList=document.getElementById('prio-finds');
-    const tList=document.getElementById('top-brainrots');
+newC.innerHTML="";
+oldC.innerHTML="";
+pNew.innerHTML="";
+pOld.innerHTML="";
 
-    gList.innerHTML="";
-    pList.innerHTML="";
-    tList.innerHTML="";
+data.detections.forEach(d=>{
+if(d.gen<25000)return;
 
-    data.detections.filter(d=>d.gen>=25000).slice(0,50).forEach(d=>{
-      gList.innerHTML+=`<li>${d.owner||"Unknown"} has ${formatGen(d.gen)}</li>`;
-    });
+const expired=(Date.now()-d.timestamp)/1000>60;
 
-    data.detections
-      .filter(d=>d.gen>=500000)
-      .sort((a,b)=>b.gen-a.gen)
-      .slice(0,50)
-      .forEach((d,i)=>{
-        pList.innerHTML+=`<li>${i+1}. ${d.owner||"Unknown"} has ${d.name} (${formatGen(d.gen)})</li>`;
-      });
+const card=document.createElement('div');
+card.className='card';
 
-    data.detections
-      .sort((a,b)=>b.gen-a.gen)
-      .slice(0,10)
-      .forEach((d,i)=>{
-        tList.innerHTML+=`<li>${i+1}. ${d.name} (${formatGen(d.gen)})</li>`;
-      });
+card.innerHTML=`
+<h2>${d.name}</h2>
+<p>Gen: ${formatGen(d.gen)}</p>
+<p>${rarityLabel(d.gen)}</p>
+<p>Owner: ${d.owner||"Unknown"}</p>
+${expired?`<p style="color:red;">Owner left</p>`:
+`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
+<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
+`;
 
-    // Cards
-    data.detections.forEach(d=>{
-      if(shownJobs.has(d.jobId)) return;
-      shownJobs.add(d.jobId);
+if(d.gen>=500000){
+expired?pOld.appendChild(card):pNew.appendChild(card);
+}else{
+expired?oldC.appendChild(card):newC.appendChild(card);
+}
+});
 
-      if(d.gen<25000) return;
+// leaderboards
+const g=document.getElementById('global-finds');
+const p=document.getElementById('prio-finds');
+const t=document.getElementById('top-brainrots');
 
-      const expired=(Date.now()-d.timestamp)/1000>60;
-      const card=document.createElement('div');
-      card.className='card';
+g.innerHTML="";
+p.innerHTML="";
+t.innerHTML="";
 
-      card.innerHTML=`
-        <h2>${d.name}</h2>
-        <p>Gen: ${formatGen(d.gen)}</p>
-        <p>${rarityLabel(d.gen)}</p>
-        <p>Owner: ${d.owner||"Unknown"}</p>
-        ${expired
-          ? `<p style="color:#ff5a5a;">Owner left</p>`
-          : `<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join Server</a>`
-        }
-      `;
+data.detections.slice(0,50).forEach(d=>{
+g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`;
+});
 
-      if(d.gen>=500000){
-        expired
-          ? document.getElementById('priority-old').appendChild(card)
-          : document.getElementById('priority-new').appendChild(card);
-      }else{
-        expired
-          ? document.getElementById('old-detections').appendChild(card)
-          : document.getElementById('new-detections').appendChild(card);
-      }
-    });
+data.detections.filter(d=>d.gen>=500000)
+.sort((a,b)=>b.gen-a.gen)
+.slice(0,50)
+.forEach(d=>{
+p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
+});
 
-  }catch(e){
-    console.log(e);
-  }
+data.detections.sort((a,b)=>b.gen-a.gen)
+.slice(0,10)
+.forEach(d=>{
+t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
+});
+
+}catch(e){console.log(e);}
 }
 
-// Rain system
+// rain
 const canvas=document.getElementById("rain");
 const ctx=canvas.getContext("2d");
-
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
 let drops=[];
-for(let i=0;i<250;i++){
-  drops.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    xs:-1+Math.random()*2,
-    ys:8+Math.random()*8
-  });
+for(let i=0;i<200;i++){
+drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});
 }
 
-function drawRain(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.strokeStyle="rgba(180,180,255,0.15)";
-  ctx.beginPath();
-
-  drops.forEach(d=>{
-    ctx.moveTo(d.x,d.y);
-    ctx.lineTo(d.x+d.xs,d.y+d.ys);
-  });
-
-  ctx.stroke();
-
-  drops.forEach(d=>{
-    d.x+=d.xs;
-    d.y+=d.ys;
-    if(d.y>canvas.height){
-      d.x=Math.random()*canvas.width;
-      d.y=-20;
-    }
-  });
+function rain(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="rgba(150,150,255,0.2)";
+drops.forEach(d=>{
+ctx.fillRect(d.x,d.y,2,10);
+d.y+=d.s;
+if(d.y>canvas.height){
+d.y=0;
+d.x=Math.random()*canvas.width;
+}
+});
 }
 
-setInterval(drawRain,30);
+setInterval(rain,30);
 </script>
 
 </body>
