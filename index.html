@@ -15,7 +15,9 @@ nav button:hover{background:#555}
 .detections{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
 .card{background:#141414;border:2px solid #6600ff;border-radius:10px;padding:15px;width:280px}
 .card h2{margin:0;color:#ff0066;font-size:20px}
-.join-btn{display:block;margin-top:10px;padding:8px;text-align:center;background:#00ccff;color:#000;border-radius:6px;font-weight:bold;text-decoration:none}
+.join-btn,.copy-btn{display:block;margin-top:10px;padding:8px;text-align:center;border-radius:6px;font-weight:bold;text-decoration:none}
+.join-btn{background:#00ccff;color:#000}
+.copy-btn{background:#ffcc00;color:#000;cursor:pointer}
 .helpers{text-align:center;font-size:16px;color:#ffcc00}
 #dashboard-wrapper{display:none}
 </style>
@@ -83,6 +85,9 @@ function priorityAccess(){
 }
 function showTab(id){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));document.getElementById(id).classList.add("active")}
 function formatGen(g){return g>=1e9?(g/1e9).toFixed(1)+"b":g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g}
+function copyJobId(jobId){
+  navigator.clipboard.writeText(jobId).then(()=>alert("JobId copied: "+jobId))
+}
 async function loadData(){
   try{
     const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');const data=await res.json();
@@ -99,9 +104,12 @@ async function loadData(){
         <p>Mutation:${d.mutation}</p>
         <p>Gen:${formatGen(d.gen)}</p>
         <p>Owner:${d.owner}</p>
-        <p>Traits:${d.traits}</p>   <!-- ✅ show traits -->
+        <p>Traits:${d.traits}</p>
         ${d.gen>=500000?`<p>JobId:${d.jobId}</p>`:""}
-        ${expired?'<p style="color:#ff0066;font-weight:bold;">Owner left!</p>':`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join</a>`}`;
+        ${expired?'<p style="color:#ff0066;font-weight:bold;">Owner left!</p>'
+                 :`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join Server</a>
+                    ${d.gen>=500000?`<button class="copy-btn" onclick="copyJobId('${d.jobId}')">Copy JobId</button>`:""}`}
+      `;
       if(d.gen>=500000){
         priorityCount++;
         expired?priOld.appendChild(card):priNew.appendChild(card);
