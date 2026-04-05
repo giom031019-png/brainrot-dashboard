@@ -1,140 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>🤡 Roba un Payaso Scanner Dashboard</title>
-  <style>
-    body {margin:0;font-family:'Segoe UI',sans-serif;
-      background: radial-gradient(circle at top left,#0d0d0d,#1a0033,#33001a,#000);
-      background-size:400% 400%;animation:gradientShift 20s ease infinite;color:#e0e0e0;}
-    @keyframes gradientShift {0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-    header {text-align:center;padding:30px;font-size:48px;font-weight:bold;color:#fff;
-      text-shadow:0 0 25px #ff0066,0 0 50px #6600ff;animation:pulseGlow 2s infinite alternate}
-    @keyframes pulseGlow {from{text-shadow:0 0 25px #ff0066}to{text-shadow:0 0 50px #00ccff}}
-    nav {display:flex;justify-content:center;background:rgba(0,0,0,0.8);padding:12px;border-bottom:2px solid #444}
-    nav button {margin:0 12px;padding:12px 24px;background:linear-gradient(45deg,#00ccff,#6600ff);
-      border:none;border-radius:8px;font-weight:bold;cursor:pointer;color:#fff;transition:.3s}
-    nav button:hover {transform:scale(1.1);box-shadow:0 0 20px #ff0066}
-    .stats {display:flex;justify-content:space-around;padding:20px;background:rgba(0,0,0,0.6);border-bottom:2px solid #444}
-    .stat {text-align:center;font-size:24px;color:#00ffcc;transition:.3s}
-    .stat:hover {transform:scale(1.2)}
-    .tab {display:none;padding:20px}.tab.active {display:block}
-    .detections {display:flex;flex-wrap:wrap;justify-content:center;gap:25px}
-    .card {background:#141414;border:2px solid #6600ff;border-radius:12px;padding:20px;width:320px;
-      box-shadow:0 0 25px rgba(102,0,255,0.6);transition:.4s;animation:fadeInUp 1s ease}
-    .card:hover {transform:translateY(-10px) scale(1.05);box-shadow:0 0 40px rgba(255,0,102,0.9)}
-    @keyframes fadeInUp {from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-    .card h2 {margin:0;color:#ff0066;font-size:26px}
-    .rarity {font-weight:bold;color:#00ffcc}
-    .priority {color:#ffcc00;font-weight:bold;text-shadow:0 0 10px #ffcc00,0 0 20px #ff0066;animation:blink 1s infinite alternate}
-    @keyframes blink {from{opacity:1}to{opacity:.5}}
-    .join-btn {display:block;margin-top:15px;padding:12px;text-align:center;background:linear-gradient(45deg,#00ccff,#ff0066);
-      color:#000;text-decoration:none;border-radius:6px;font-weight:bold;transition:.3s}
-    .join-btn:hover {transform:scale(1.05);color:#fff}
-    .helpers {text-align:center;font-size:18px;color:#ffcc00;line-height:1.6}
-    #dashboard-wrapper {display:none;}
-  </style>
+<meta charset="UTF-8">
+<title>🤡 Roba un Payaso Scanner</title>
+<style>
+body{margin:0;font-family:'Segoe UI',sans-serif;background:#0d0d0d;color:#e0e0e0}
+header{text-align:center;padding:25px;font-size:40px;font-weight:bold;color:#fff}
+nav{display:flex;justify-content:center;background:#111;padding:10px}
+nav button{margin:0 8px;padding:10px 20px;background:#333;border:none;border-radius:6px;color:#fff;cursor:pointer}
+nav button:hover{background:#555}
+.stats{display:flex;justify-content:space-around;padding:15px;background:#222}
+.stat{text-align:center;font-size:18px;color:#00ffcc}
+.tab{display:none;padding:15px}.tab.active{display:block}
+.detections{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
+.card{background:#141414;border:2px solid #6600ff;border-radius:10px;padding:15px;width:280px}
+.card h2{margin:0;color:#ff0066;font-size:20px}
+.join-btn{display:block;margin-top:10px;padding:8px;text-align:center;background:#00ccff;color:#000;border-radius:6px;font-weight:bold;text-decoration:none}
+.helpers{text-align:center;font-size:16px;color:#ffcc00}
+#dashboard-wrapper{display:none}
+</style>
 </head>
 <body>
-  <div id="dashboard-wrapper">
-    <header>🤡 Roba un Payaso Scanner Dashboard</header>
-    <nav>
-      <button onclick="showTab('dashboard')">Dashboard</button>
-      <button onclick="showTab('helpers')">Helpers</button>
-    </nav>
-    <div id="dashboard" class="tab active">
-      <div class="stats">
-        <div class="stat"><div id="total">0</div><div>Total Detections</div></div>
-        <div class="stat"><div id="best">None</div><div>Best Detection</div></div>
-      </div>
-      <h2>✨ New Detections</h2>
-      <div class="detections" id="new-detections"></div>
-      <h2>🕒 Old Detections</h2>
-      <div class="detections" id="old-detections"></div>
+
+<div id="dashboard-wrapper">
+  <header>🤡 Roba un Payaso Scanner</header>
+  <nav>
+    <button onclick="showTab('overview')">Overview</button>
+    <button onclick="showTab('dashboard')">Dashboard</button>
+    <button onclick="showTab('helpers')">Helpers</button>
+    <button onclick="priorityAccess()">TOP PRIORITY</button>
+  </nav>
+
+  <!-- Overview -->
+  <div id="overview" class="tab active">
+    <div class="stats">
+      <div class="stat"><div>3</div><div>Active Bots</div></div>
+      <div class="stat"><div id="overviewCount">0</div><div>Brainrots ≥25k</div></div>
     </div>
-    <div id="helpers" class="tab">
-      <h2>👥 Helper Credits</h2>
-      <div class="helpers">
-        gioyuhh - owner<br>
-        gioyuhh - botter<br>
-        gioyuhh - scripter<br>
-        maico - helper<br><br>
-        Best joiner out rn! - Roba un Payaso<br>
-        Credits to maico for helping, f*** yuhR!<br><br>
-        ❤️ Love you Loren<br>
-        ⭐ Maico the best
-      </div>
+    <div style="text-align:center;color:#ffcc00;font-weight:bold">w gio • w maico</div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="tab">
+    <div class="stats">
+      <div class="stat"><div id="bestMid">None</div><div>Best 25k–500k</div></div>
+    </div>
+    <h2>✨ New Detections</h2><div class="detections" id="new-detections"></div>
+    <h2>🕒 Old Detections</h2><div class="detections" id="old-detections"></div>
+  </div>
+
+  <!-- Helpers -->
+  <div id="helpers" class="tab">
+    <h2>👥 Helper Credits</h2>
+    <div class="helpers">
+      gioyuhh - owner<br>gioyuhh - botter<br>gioyuhh - scripter<br>maico - helper<br><br>
+      Best joiner out rn! - Roba un Payaso<br>Credits to maico for helping, f*** yuhR!<br><br>
+      ❤️ Love you Loren<br>⭐ Maico the best
     </div>
   </div>
 
-  <script>
-    window.onload = function() {
-      const password = prompt("Enter password to access:");
-      if (password === "macielissocute") {
-        document.getElementById("dashboard-wrapper").style.display = "block";
-      } else {
-        document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:20%;'>Access Denied ❌</h1>";
-      }
-    };
+  <!-- Top Priority -->
+  <div id="priority" class="tab">
+    <div class="stats">
+      <div class="stat"><div id="bestHigh">None</div><div>Best</div></div>
+      <div class="stat"><div id="priorityCount">0</div><div>Total Top Priority Brainrots</div></div>
+    </div>
+    <h2>🔥 New Top Priority</h2><div class="detections" id="priority-new"></div>
+    <h2>🕒 Old Detections</h2><div class="detections" id="priority-old"></div>
+  </div>
+</div>
 
-    function showTab(tabId) {
-      document.querySelectorAll(".tab").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(tabId).classList.add("active");
-    }
-
-    function formatGen(gen) {
-      if (gen >= 1e9) return (gen/1e9).toFixed(1) + "b";
-      if (gen >= 1e6) return (gen/1e6).toFixed(1) + "m";
-      if (gen >= 1e3) return (gen/1e3).toFixed(1) + "k";
-      return gen.toString();
-    }
-
-    function rarityLabel(gen) {
-      if (gen >= 1e6) return `<span class="priority">TOP PRIORITY</span>`;
-      if (gen >= 1e5) return `<span class="rarity">Legendary</span>`;
-      if (gen >= 25000) return `<span class="rarity">Rare</span>`;
-      return `<span class="rarity">Common</span>`;
-    }
-
-    async function loadData() {
-      try {
-        const res = await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
-        const data = await res.json();
-
-        document.getElementById('total').innerText = data.total;
-        document.getElementById('best').innerText = data.bestFind ? 
-          `${data.bestFind.name} (${formatGen(data.bestFind.gen)})` : 'None';
-
-        const newContainer = document.getElementById('new-detections');
-        const oldContainer = document.getElementById('old-detections');
-        newContainer.innerHTML = ""; oldContainer.innerHTML = "";
-
-        if (!data.detections || data.detections.length === 0) return;
-
-        data.detections.slice().reverse().forEach(d => {
-          if (d.gen < 25000) return;
-          const age = (Date.now() - d.timestamp) / 1000;
-          const expired = age > 60;
-
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
-            <h2>${d.name}</h2>
-            <p>Mutation: ${d.mutation}</p>
-            <p>Generation: ${formatGen(d.gen)}</p>
-            <p>Owner: ${d.owner}</p>
-            <p>Rarity: ${rarityLabel(d.gen)}</p>
-            ${expired 
-              ? `<p style="color:#ff0066;font-weight:bold;">Owner left!</p>` 
-              : `<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join Server</a>`}
-          `;
-          if (expired) oldContainer.appendChild(card); else newContainer.appendChild(card);
-        });
-      } catch (err) { console.error("Error loading data:", err); }
-    }
-
-    setInterval(loadData, 3000);
-    loadData();
-  </script>
+<script>
+window.onload=function(){
+  const pw=prompt("Enter dashboard password:");
+  if(pw==="macielissocute"){document.getElementById("dashboard-wrapper").style.display="block"}
+  else{document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:20%;'>Access Denied ❌</h1>"}
+}
+function priorityAccess(){
+  const pass=prompt("Enter TOP PRIORITY password:");
+  if(pass==="nexo10191919293747946"){showTab('priority')}
+  else{alert("Wrong password ❌")}
+}
+function showTab(id){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));document.getElementById(id).classList.add("active")}
+function formatGen(g){return g>=1e9?(g/1e9).toFixed(1)+"b":g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g}
+async function loadData(){
+  try{
+    const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');const data=await res.json();
+    document.getElementById('overviewCount').innerText=data.detections?data.detections.filter(d=>d.gen>=25000).length:0;
+    const newC=document.getElementById('new-detections'),oldC=document.getElementById('old-detections'),
+          priNew=document.getElementById('priority-new'),priOld=document.getElementById('priority-old');
+    newC.innerHTML="";oldC.innerHTML="";priNew.innerHTML="";priOld.innerHTML="";
+    let bestMid=null,bestHigh=null,priorityCount=0;
+    data.detections.slice().reverse().forEach(d=>{
+      if(d.gen<25000)return;
+      const age=(Date.now()-d.timestamp)/1000;const expired=age>60;
+      const card=document.createElement('div');card.className='card';
+      card.innerHTML=`<h2>${d.name}</h2><p>Mutation:${d.mutation}</p><p>Gen:${formatGen(d.gen)}</p><p>Owner:${d.owner}</p>${expired?'<p style="color:#ff0066;font-weight:bold;">Owner left!</p>':`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join</a>`}`;
+      if(d.gen>=500000){priorityCount++;expired?priOld.appendChild(card):priNew.appendChild(card);if(!bestHigh||d.gen>bestHigh.gen)bestHigh=d}
+      else{expired?oldC.appendChild(card):newC.appendChild(card);if(!bestMid||d.gen>bestMid.gen)bestMid=d}
+    });
+    if(bestMid){document.getElementById('bestMid').innerText=`${bestMid.name} (${formatGen(bestMid.gen)})`}
+    if(bestHigh){document.getElementById('bestHigh').innerText=`${bestHigh.name} (${formatGen(bestHigh.gen)})`}
+    document.getElementById('priorityCount').innerText=priorityCount;
+  }catch(e){console.error("Error:",e)}
+}
+setInterval(loadData,3000);loadData();
+</script>
 </body>
 </html>
