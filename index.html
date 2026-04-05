@@ -107,8 +107,8 @@ async function loadData(){
         <p>Traits:${d.traits}</p>
         ${d.gen>=500000?`<p>JobId:${d.jobId}</p>`:""}
         ${expired?'<p style="color:#ff0066;font-weight:bold;">Owner left!</p>'
-                 :`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join Server</a>
-                    ${d.gen>=500000?`<button class="copy-btn" onclick="copyJobId('${d.jobId}')">Copy JobId</button>`:""}`}
+                 :`${d.gen>=500000?`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join Server</a>
+                    <button class="copy-btn" onclick="copyJobId('${d.jobId}')">Copy JobId</button>`:""}`}
       `;
       if(d.gen>=500000){
         priorityCount++;
