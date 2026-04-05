@@ -99,6 +99,7 @@ async function loadData(){
         <p>Mutation:${d.mutation}</p>
         <p>Gen:${formatGen(d.gen)}</p>
         <p>Owner:${d.owner}</p>
+        <p>Traits:${d.traits}</p>   <!-- ✅ show traits -->
         ${d.gen>=500000?`<p>JobId:${d.jobId}</p>`:""}
         ${expired?'<p style="color:#ff0066;font-weight:bold;">Owner left!</p>':`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join</a>`}`;
       if(d.gen>=500000){
