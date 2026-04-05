@@ -95,9 +95,20 @@ async function loadData(){
       if(d.gen<25000)return;
       const age=(Date.now()-d.timestamp)/1000;const expired=age>60;
       const card=document.createElement('div');card.className='card';
-      card.innerHTML=`<h2>${d.name}</h2><p>Mutation:${d.mutation}</p><p>Gen:${formatGen(d.gen)}</p><p>Owner:${d.owner}</p>${expired?'<p style="color:#ff0066;font-weight:bold;">Owner left!</p>':`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join</a>`}`;
-      if(d.gen>=500000){priorityCount++;expired?priOld.appendChild(card):priNew.appendChild(card);if(!bestHigh||d.gen>bestHigh.gen)bestHigh=d}
-      else{expired?oldC.appendChild(card):newC.appendChild(card);if(!bestMid||d.gen>bestMid.gen)bestMid=d}
+      card.innerHTML=`<h2>${d.name}</h2>
+        <p>Mutation:${d.mutation}</p>
+        <p>Gen:${formatGen(d.gen)}</p>
+        <p>Owner:${d.owner}</p>
+        ${d.gen>=500000?`<p>JobId:${d.jobId}</p>`:""}
+        ${expired?'<p style="color:#ff0066;font-weight:bold;">Owner left!</p>':`<a class="join-btn" href="roblox://placeId=${d.placeId}&gameInstanceId=${d.jobId}">Join</a>`}`;
+      if(d.gen>=500000){
+        priorityCount++;
+        expired?priOld.appendChild(card):priNew.appendChild(card);
+        if(!bestHigh||d.gen>bestHigh.gen)bestHigh=d;
+      }else{
+        expired?oldC.appendChild(card):newC.appendChild(card);
+        if(!bestMid||d.gen>bestMid.gen)bestMid=d;
+      }
     });
     if(bestMid){document.getElementById('bestMid').innerText=`${bestMid.name} (${formatGen(bestMid.gen)})`}
     if(bestHigh){document.getElementById('bestHigh').innerText=`${bestHigh.name} (${formatGen(bestHigh.gen)})`}
