@@ -111,17 +111,7 @@ button{padding:10px 15px;margin-top:10px;border:none;border-radius:6px;cursor:po
 <script>
 const API = "https://brainrot-dashboard-ichq.onrender.com";
 
-// 🔐 Anti bypass basic
-if(location.protocol==="file:"){
-document.body.innerHTML="Run from a server.";
-}
-
-// fingerprint
-function getFingerprint(){
-return navigator.userAgent + screen.width + screen.height;
-}
-
-// LOGIN
+// ===== LOGIN =====
 async function login(){
 let key = document.getElementById("keyInput").value;
 
@@ -130,7 +120,7 @@ method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
 key:key,
-fingerprint:getFingerprint()
+fingerprint:getHWID()
 })
 });
 
@@ -147,7 +137,51 @@ document.getElementById("loginStatus").innerText="❌ Invalid / Expired";
 }
 }
 
-// TABS
+// ===== HWID SYSTEM =====
+const ADMIN_PASS = "nexo11223344like11223344";
+
+function getHWID(){
+return btoa(
+navigator.userAgent +
+screen.width +
+screen.height +
+navigator.language
+);
+}
+
+function lockToHWID(){
+let hwid = getHWID();
+localStorage.setItem("owner_hwid", hwid);
+alert("✅ Locked to this device");
+}
+
+function checkHWID(){
+let saved = localStorage.getItem("owner_hwid");
+let current = getHWID();
+if(!saved) return true;
+return saved === current;
+}
+
+document.addEventListener("keydown", function(e){
+if(e.key === "F4"){
+e.preventDefault();
+let pass = prompt("Enter owner password:");
+if(pass === ADMIN_PASS){
+lockToHWID();
+}else{
+alert("❌ Wrong password");
+}
+}
+});
+
+// BLOCK NON OWNER
+window.addEventListener("load", ()=>{
+if(!checkHWID()){
+document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>❌ Not authorized device</h1>";
+}
+});
+
+// ===== TABS =====
 function showTab(id){
 if(id==="priority" && window.userType!=="prio"){
 alert("Dashboard key not valid for prio!");
@@ -157,16 +191,103 @@ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
 document.getElementById(id).classList.add("active");
 }
 
-// LOAD USERS
-async function loadData(){
-try{
-let r = await fetch(API+"/users");
-let u = await r.json();
-document.getElementById("users").innerText = u.count || 0;
-}catch{}
+// ===== DATA =====
+function formatGen(g){
+return g>=1e6?(g/1e6).toFixed(1)+"m":
+g>=1e3?(g/1e3).toFixed(1)+"k":g;
 }
 
-// 🌧️ RAIN
+function rarityLabel(g){
+if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
+if(g>=1e5)return"<span class='rarity'>Legendary</span>";
+if(g>=25000)return"<span class='rarity'>Rare</span>";
+return"<span class='rarity'>Common</span>";
+}
+
+function copyJob(id){
+navigator.clipboard.writeText(id);
+}
+
+async function loadData(){
+try{
+
+// users
+let u = await fetch(API+"/users").then(r=>r.json());
+document.getElementById("users").innerText = u.count || 0;
+
+// detections
+const res=await fetch(API+'/detections');
+const data=await res.json();
+
+document.getElementById('total').innerText=data.total||0;
+document.getElementById('best').innerText=data.bestFind?
+data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
+
+const newC=document.getElementById('new-detections');
+const oldC=document.getElementById('old-detections');
+const pNew=document.getElementById('priority-new');
+const pOld=document.getElementById('priority-old');
+
+newC.innerHTML="";
+oldC.innerHTML="";
+pNew.innerHTML="";
+pOld.innerHTML="";
+
+data.detections.forEach(d=>{
+if(d.gen<25000)return;
+
+const expired=(Date.now()-d.timestamp)/1000>60;
+
+const card=document.createElement('div');
+card.className='card';
+
+card.innerHTML=`
+<h2>${d.name}</h2>
+<p>Gen: ${formatGen(d.gen)}</p>
+<p>${rarityLabel(d.gen)}</p>
+<p>Owner: ${d.owner||"Unknown"}</p>
+${expired?`<p style="color:red;">Owner left</p>`:
+`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
+<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
+`;
+
+if(d.gen>=500000){
+expired?pOld.appendChild(card):pNew.appendChild(card);
+}else{
+expired?oldC.appendChild(card):newC.appendChild(card);
+}
+});
+
+// leaderboards
+const g=document.getElementById('global-finds');
+const p=document.getElementById('prio-finds');
+const t=document.getElementById('top-brainrots');
+
+g.innerHTML="";
+p.innerHTML="";
+t.innerHTML="";
+
+data.detections.slice(0,50).forEach(d=>{
+g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`;
+});
+
+data.detections.filter(d=>d.gen>=500000)
+.sort((a,b)=>b.gen-a.gen)
+.slice(0,50)
+.forEach(d=>{
+p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
+});
+
+data.detections.sort((a,b)=>b.gen-a.gen)
+.slice(0,10)
+.forEach(d=>{
+t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
+});
+
+}catch(e){console.log(e);}
+}
+
+// ===== RAIN =====
 const canvas=document.getElementById("rain");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
@@ -190,21 +311,6 @@ d.x=Math.random()*canvas.width;
 });
 }
 setInterval(rain,30);
-
-// 🕵️ Hidden admin
-let seq="";
-document.addEventListener("keydown", e=>{
-seq += e.key;
-if(seq.includes("nexoadmin")){
-let k = prompt("Admin Key:");
-fetch(API+"/generate",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({admin_key:k,type:"normal"})
-}).then(r=>r.json()).then(d=>alert("Key: "+d.key));
-seq="";
-}
-});
 </script>
 
 </body>
