@@ -3,56 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <title>🤡 Roba un Payaso Scanner Dashboard</title>
-
 <style>
 body{margin:0;font-family:'Segoe UI',sans-serif;background:#0b0f14;color:#e0e0e0;overflow-x:hidden}
 canvas{position:fixed;top:0;left:0;z-index:-1}
-
 header{text-align:center;padding:20px;font-size:34px;color:#fff;text-shadow:0 0 15px #00ccff}
-
 nav{display:flex;justify-content:center;padding:10px}
 nav button{margin:0 8px;padding:10px 18px;background:#161b22;border-radius:8px;color:#ccc;cursor:pointer}
 nav button:hover{background:#222}
-
 .tab{display:none;padding:15px}
 .tab.active{display:block}
-
 .stats{display:flex;justify-content:space-around}
-
 .detections{display:flex;flex-wrap:wrap;gap:15px;justify-content:center}
-
 .card{background:#14181f;border-radius:12px;padding:12px;width:260px}
-
-.join-btn,.copy-btn{
-display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
-}
+.join-btn,.copy-btn{display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px}
 .join-btn{background:#1f2933;color:#fff;text-decoration:none}
 .copy-btn{background:#333;color:#ccc;cursor:pointer}
-
 .priority{color:#ffd966}
 .rarity{color:#8fd3ff}
-
 .leaderboards{display:flex;gap:20px}
 .leaderboard{flex:1;background:#14181f;padding:10px;border-radius:10px}
-
 #dashboard-wrapper{display:none}
-
-#key-box{
-position:absolute;top:50%;left:50%;
-transform:translate(-50%,-50%);
-background:#111;padding:30px;
-border-radius:12px;box-shadow:0 0 20px #00ccff55;
-text-align:center;
-}
-
+#key-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+background:#111;padding:30px;border-radius:12px;box-shadow:0 0 20px #00ccff55;text-align:center;}
 #key-box input{padding:10px;border-radius:6px;border:none;width:220px;}
 #key-box button{padding:10px 20px;margin-top:10px;background:#222;color:#fff;border:none;border-radius:8px;cursor:pointer;}
 #key-box #status{margin-top:10px;}
 </style>
 </head>
-
 <body>
-
 <canvas id="rain"></canvas>
 
 <!-- KEY LOGIN -->
@@ -62,45 +40,47 @@ text-align:center;
 <button onclick="login()">Login</button>
 <p id="status"></p>
 <br>
-<a href="https://discord.gg/gJHmxFZ2cZ" target="_blank">
-<button>Get Key (Discord)</button>
-</a>
+<a href="https://discord.gg/gJHmxFZ2cZ" target="_blank"><button>Get Key (Discord)</button></a>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboard-wrapper">
-
 <header>🤡 Roba un Payaso Scanner Dashboard</header>
-
 <nav>
+<button onclick="showTab('overview')">Overview</button>
 <button onclick="showTab('dashboard')">Dashboard</button>
 <button onclick="showTab('priority')">Top Priority</button>
 <button onclick="showTab('leaderboard')">Leaderboard</button>
 <button onclick="showTab('helpers')">Helpers</button>
 </nav>
 
+<!-- Overview -->
+<div id="overview" class="tab">
+<h2>Overview</h2>
+<div class="stats">
+<div><div id="active-bots">0</div><div>Bots Active</div></div>
+<div><div id="active-users">0</div><div>Users Online</div></div>
+</div>
+</div>
+
+<!-- Normal Dashboard -->
 <div id="dashboard" class="tab active">
 <div class="stats">
 <div><div id="total">0</div><div>Total</div></div>
 <div><div id="best">None</div><div>Best</div></div>
-<div><div id="active-users">0</div><div>Active Users</div></div>
+</div>
+<h2>New</h2><div id="new-detections" class="detections"></div>
+<h2>Old</h2><div id="old-detections" class="detections"></div>
 </div>
 
-<h2>New</h2>
-<div id="new-detections" class="detections"></div>
-
-<h2>Old</h2>
-<div id="old-detections" class="detections"></div>
-</div>
-
+<!-- Priority -->
 <div id="priority" class="tab">
 <h2>Top Priority</h2>
-<h3>New</h3>
-<div id="priority-new" class="detections"></div>
-<h3>Old</h3>
-<div id="priority-old" class="detections"></div>
+<h3>New</h3><div id="priority-new" class="detections"></div>
+<h3>Old</h3><div id="priority-old" class="detections"></div>
 </div>
 
+<!-- Leaderboard -->
 <div id="leaderboard" class="tab">
 <div class="leaderboards">
 <div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
@@ -110,25 +90,17 @@ text-align:center;
 </div>
 
 <div id="helpers" class="tab"><center>gioyuhh • maico</center></div>
-
 </div>
 
 <script>
-// ===== KEY LOGIN =====
-const API = "https://key-sytem.onrender.com";
+const API = "https://key-sytem.onrender.com"; // your server
 
-function getHWID(){
-    return btoa(navigator.userAgent + screen.width + screen.height + navigator.language);
-}
-
+function getHWID(){return btoa(navigator.userAgent+screen.width+screen.height+navigator.language);}
 async function login(){
     let key = document.getElementById("key").value;
     try{
-        let res = await fetch(API+"/validate",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({key:key,fingerprint:getHWID()})
-        });
+        let res = await fetch(API+"/validate",{method:"POST",headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({key:key,fingerprint:getHWID()})});
         let data = await res.json();
         if(data.status==="ok"){
             document.getElementById("status").innerText="✅ Access Granted";
@@ -137,104 +109,61 @@ async function login(){
             document.getElementById("dashboard-wrapper").style.display="block";
             loadData();
             setInterval(loadData,3000);
-        }else if(data.status==="used"){
-            document.getElementById("status").innerText="❌ Key already used on another device";
-            document.getElementById("status").style.color="red";
-        }else if(data.status==="expired"){
-            document.getElementById("status").innerText="❌ Key expired";
-            document.getElementById("status").style.color="red";
-        }else{
-            document.getElementById("status").innerText="❌ Invalid key";
-            document.getElementById("status").style.color="red";
-        }
-    }catch(e){
-        document.getElementById("status").innerText="❌ Server offline";
-        document.getElementById("status").style.color="red";
-    }
+            window.userKeyType = data.type;
+        } else if(data.status==="used"){document.getElementById("status").innerText="❌ Key used";document.getElementById("status").style.color="red";}
+        else if(data.status==="expired"){document.getElementById("status").innerText="❌ Key expired";document.getElementById("status").style.color="red";}
+        else{document.getElementById("status").innerText="❌ Invalid key";document.getElementById("status").style.color="red";}
+    }catch(e){document.getElementById("status").innerText="❌ Server offline";document.getElementById("status").style.color="red";}
 }
 
-// ===== TABS =====
 function showTab(id){
+    if(id==="priority" && window.userKeyType!=="prio"){alert("No PRIO key!");return;}
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
 
-// ===== SCANNER LOGIC =====
+// --- Scanner functions ---
 function formatGen(g){return g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g;}
-function rarityLabel(g){
-    if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
-    if(g>=1e5)return"<span class='rarity'>Legendary</span>";
-    if(g>=25000)return"<span class='rarity'>Rare</span>";
-    return"<span class='rarity'>Common</span>";
-}
+function rarityLabel(g){if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";if(g>=1e5)return"<span class='rarity'>Legendary</span>";if(g>=25000)return"<span class='rarity'>Rare</span>";return"<span class='rarity'>Common</span>";}
 function copyJob(id){navigator.clipboard.writeText(id);}
 
 async function loadData(){
-try{
-    const res=await fetch(API+'/detections');
-    const data=await res.json();
+    try{
+        const res1 = await fetch(API+'/detections'); const data1 = await res1.json();
+        const res2 = await fetch(API+'/active'); const data2 = await res2.json();
 
-    document.getElementById('total').innerText=data.total||0;
-    document.getElementById('best').innerText=data.bestFind?data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
-    document.getElementById('active-users').innerText=data.activeUsers||0;
+        document.getElementById('total').innerText = data1.total || 0;
+        document.getElementById('best').innerText = data1.bestFind ? data1.bestFind.name + " (" + formatGen(data1.bestFind.gen) + ")" : "None";
+        document.getElementById('active-bots').innerText = data2.bots;
+        document.getElementById('active-users').innerText = data2.activeUsers;
 
-    const newC=document.getElementById('new-detections');
-    const oldC=document.getElementById('old-detections');
-    const pNew=document.getElementById('priority-new');
-    const pOld=document.getElementById('priority-old');
+        const newC=document.getElementById('new-detections');
+        const oldC=document.getElementById('old-detections');
+        const pNew=document.getElementById('priority-new');
+        const pOld=document.getElementById('priority-old');
+        newC.innerHTML=""; oldC.innerHTML=""; pNew.innerHTML=""; pOld.innerHTML="";
 
-    newC.innerHTML="";
-    oldC.innerHTML="";
-    pNew.innerHTML="";
-    pOld.innerHTML="";
+        data1.detections.forEach(d=>{
+            if(d.gen<25000)return;
+            const expired=(Date.now()-d.timestamp)/1000>60;
+            const card=document.createElement('div'); card.className='card';
+            card.innerHTML=`<h2>${d.name}</h2><p>Gen: ${formatGen(d.gen)}</p><p>${rarityLabel(d.gen)}</p><p>Owner: ${d.owner||"Unknown"}</p>${expired?`<p style="color:red;">Owner left</p>`:`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a><button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}`;
+            if(d.gen>=500000){expired?pOld.appendChild(card):pNew.appendChild(card);}else{expired?oldC.appendChild(card):newC.appendChild(card);}
+        });
 
-    data.detections.forEach(d=>{
-        if(d.gen<25000)return;
-        const expired=(Date.now()-d.timestamp)/1000>60;
-        const card=document.createElement('div'); card.className='card';
-        card.innerHTML=`
-<h2>${d.name}</h2>
-<p>Gen: ${formatGen(d.gen)}</p>
-<p>${rarityLabel(d.gen)}</p>
-<p>Owner: ${d.owner||"Unknown"}</p>
-${expired?`<p style="color:red;">Owner left</p>`:
-`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
-<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
-`;
-        if(d.gen>=500000){expired?pOld.appendChild(card):pNew.appendChild(card);}
-        else{expired?oldC.appendChild(card):newC.appendChild(card);}
-    });
-
-    // leaderboards
-    const g=document.getElementById('global-finds');
-    const p=document.getElementById('prio-finds');
-    const t=document.getElementById('top-brainrots');
-    g.innerHTML=""; p.innerHTML=""; t.innerHTML="";
-    data.detections.slice(0,50).forEach(d=>{g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`});
-    data.detections.filter(d=>d.gen>=500000).sort((a,b)=>b.gen-a.gen).slice(0,50)
-        .forEach(d=>{p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
-    data.detections.sort((a,b)=>b.gen-a.gen).slice(0,10)
-        .forEach(d=>{t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
-
-}catch(e){console.log(e);}
+        // leaderboards
+        const g=document.getElementById('global-finds'); const p=document.getElementById('prio-finds'); const t=document.getElementById('top-brainrots'); g.innerHTML=""; p.innerHTML=""; t.innerHTML="";
+        data1.detections.slice(0,50).forEach(d=>{g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`});
+        data1.detections.filter(d=>d.gen>=500000).sort((a,b)=>b.gen-a.gen).slice(0,50).forEach(d=>{p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
+        data1.detections.sort((a,b)=>b.gen-a.gen).slice(0,10).forEach(d=>{t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
+    }catch(e){console.log(e);}
 }
 
-// ===== RAIN EFFECT =====
-const canvas=document.getElementById("rain");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+// Rain effect
+const canvas=document.getElementById("rain"); const ctx=canvas.getContext("2d"); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
 let drops=[]; for(let i=0;i<200;i++){drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});}
-function rain(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle="rgba(150,150,255,0.2)";
-    drops.forEach(d=>{
-        ctx.fillRect(d.x,d.y,2,10);
-        d.y+=d.s;
-        if(d.y>canvas.height){d.y=0;d.x=Math.random()*canvas.width;}
-    });
-}
+function rain(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="rgba(150,150,255,0.2)";drops.forEach(d=>{ctx.fillRect(d.x,d.y,2,10);d.y+=d.s;if(d.y>canvas.height){d.y=0;d.x=Math.random()*canvas.width;}});}
 setInterval(rain,30);
-
 </script>
 </body>
 </html>
