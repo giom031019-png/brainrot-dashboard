@@ -101,11 +101,22 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <script>
 const API = "https://<your-render-service>.onrender.com"; // <--- Put your Render URL here
 
+let hasPriorityKey = false;
+
 // ===== KEY LOGIN =====
 window.onload=async()=>{
-const key=prompt("Enter key:");
+let key=prompt("Enter key:");
 if(key==="nexo-22222234"){
+// Dashboard only
 document.getElementById("dashboard-wrapper").style.display="block";
+hasPriorityKey=false;
+await loginKey(key);
+loadData();
+setInterval(loadData,3000);
+}else if(key==="prioissogoated11"){
+// Dashboard + Priority
+document.getElementById("dashboard-wrapper").style.display="block";
+hasPriorityKey=true;
 await loginKey(key);
 loadData();
 setInterval(loadData,3000);
@@ -127,7 +138,7 @@ body:JSON.stringify({key:key,fingerprint:btoa(navigator.userAgent+screen.width+s
 
 // ===== TABS =====
 function showTab(id){
-if(id==="priority"){
+if(id==="priority" && !hasPriorityKey){
 alert("You need a Top Priority key to access this tab.");
 return;
 }
