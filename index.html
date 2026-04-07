@@ -57,13 +57,12 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 
 <!-- MAIN TAB -->
 <div id="main" class="tab">
-<h2>Main Overview</h2>
-<div class="stats">
-<div><div id="users-online">0</div><div>Users Online</div></div>
-<div><div id="bots-active">4</div><div>Bots Active</div></div>
-</div>
+<h2>Overview</h2>
+<p>Active Users: <span id="active-users">0</span></p>
+<p>Bots Active: 4</p>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dashboard" class="tab active">
 <div class="stats">
 <div><div id="total">0</div><div>Total</div></div>
@@ -77,6 +76,7 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <div id="old-detections" class="detections"></div>
 </div>
 
+<!-- PRIORITY TAB -->
 <div id="priority" class="tab">
 <h2>Top Priority</h2>
 <h3>New</h3>
@@ -85,6 +85,7 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <div id="priority-old" class="detections"></div>
 </div>
 
+<!-- LEADERBOARD -->
 <div id="leaderboard" class="tab">
 <div class="leaderboards">
 <div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
@@ -98,121 +99,95 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 </div>
 
 <script>
-// ===== GUI KEY SYSTEM =====
-window.onload = () => {
-  const key = prompt("Enter key to access the dashboard:");
-  if(key === "nexo-22222234"){
-    document.getElementById("dashboard-wrapper").style.display = "block";
-    loadData();
-    setInterval(loadData, 3000);
-  } else {
-    document.body.innerHTML = "<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
-  }
+const API = "https://<your-render-service>.onrender.com"; // <--- Put your Render URL here
+
+// ===== KEY LOGIN =====
+window.onload=async()=>{
+const key=prompt("Enter key:");
+if(key==="nexo-22222234"){
+document.getElementById("dashboard-wrapper").style.display="block";
+await loginKey(key);
+loadData();
+setInterval(loadData,3000);
+}else{
+document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
+}
 };
+
+// Send key to server to validate
+async function loginKey(key){
+try{
+await fetch(API+"/validate",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({key:key,fingerprint:btoa(navigator.userAgent+screen.width+screen.height+navigator.language)})
+});
+}catch(e){console.log("Login API error", e);}
+}
 
 // ===== TABS =====
 function showTab(id){
-  if(id==="priority"){
-    alert("Top Priority requires a special key!"); 
-    // you can implement a separate check if you want
-  }
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+if(id==="priority"){
+alert("You need a Top Priority key to access this tab.");
+return;
+}
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
-// ===== SCANNER LOGIC =====
+// ===== UTILITY =====
 function formatGen(g){return g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g;}
-function rarityLabel(g){
-if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
-if(g>=1e5)return"<span class='rarity'>Legendary</span>";
-if(g>=25000)return"<span class='rarity'>Rare</span>";
-return"<span class='rarity'>Common</span>";
-}
+function rarityLabel(g){if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";if(g>=1e5)return"<span class='rarity'>Legendary</span>";if(g>=25000)return"<span class='rarity'>Rare</span>";return"<span class='rarity'>Common</span>";}
 function copyJob(id){navigator.clipboard.writeText(id);}
 
+// ===== LOAD DATA =====
 async function loadData(){
 try{
-const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
+const res=await fetch(API+'/detections');
 const data=await res.json();
 
 document.getElementById('total').innerText=data.total||0;
 document.getElementById('best').innerText=data.bestFind?data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
-document.getElementById('users-online').innerText = data.activeUsers || 0;
+document.getElementById('active-users').innerText=data.activeUsers||0;
 
 const newC=document.getElementById('new-detections');
 const oldC=document.getElementById('old-detections');
 const pNew=document.getElementById('priority-new');
 const pOld=document.getElementById('priority-old');
 
-newC.innerHTML="";
-oldC.innerHTML="";
-pNew.innerHTML="";
-pOld.innerHTML="";
+newC.innerHTML=""; oldC.innerHTML=""; pNew.innerHTML=""; pOld.innerHTML="";
 
 data.detections.forEach(d=>{
 if(d.gen<25000)return;
-
 const expired=(Date.now()-d.timestamp)/1000>60;
-
-const card=document.createElement('div');
-card.className='card';
-
+const card=document.createElement('div'); card.className='card';
 card.innerHTML=`
 <h2>${d.name}</h2>
 <p>Gen: ${formatGen(d.gen)}</p>
 <p>${rarityLabel(d.gen)}</p>
 <p>Owner: ${d.owner||"Unknown"}</p>
-${expired?`<p style="color:red;">Owner left</p>`:
-`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
-<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
-`;
-
-if(d.gen>=500000){
-expired?pOld.appendChild(card):pNew.appendChild(card);
-}else{
-expired?oldC.appendChild(card):newC.appendChild(card);
-}
+${expired?`<p style="color:red;">Owner left</p>`:`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a><button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}`;
+if(d.gen>=500000){expired?pOld.appendChild(card):pNew.appendChild(card);}else{expired?oldC.appendChild(card):newC.appendChild(card);}
 });
 
 // leaderboards
 const g=document.getElementById('global-finds');
 const p=document.getElementById('prio-finds');
 const t=document.getElementById('top-brainrots');
-
-g.innerHTML="";
-p.innerHTML="";
-t.innerHTML="";
-
-data.detections.slice(0,50).forEach(d=>{
-g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`;
-});
-
-data.detections.filter(d=>d.gen>=500000)
-.sort((a,b)=>b.gen-a.gen)
-.slice(0,50)
-.forEach(d=>{
-p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
-});
-
-data.detections.sort((a,b)=>b.gen-a.gen)
-.slice(0,10)
-.forEach(d=>{
-t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
-});
-
+g.innerHTML=""; p.innerHTML=""; t.innerHTML="";
+data.detections.slice(0,50).forEach(d=>{g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`;});
+data.detections.filter(d=>d.gen>=500000).sort((a,b)=>b.gen-a.gen).slice(0,50).forEach(d=>{p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;});
+data.detections.sort((a,b)=>b.gen-a.gen).slice(0,10).forEach(d=>{t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;});
 }catch(e){console.log(e);}
 }
 
 // ===== RAIN =====
 const canvas=document.getElementById("rain");
 const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let drops=[];for(let i=0;i<200;i++){drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});}
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+let drops=[]; for(let i=0;i<200;i++){drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});}
 function rain(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="rgba(150,150,255,0.2)";drops.forEach(d=>{ctx.fillRect(d.x,d.y,2,10);d.y+=d.s;if(d.y>canvas.height){d.y=0;d.x=Math.random()*canvas.width;}});}
 setInterval(rain,30);
-
 </script>
 
 </body>
