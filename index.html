@@ -43,8 +43,14 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 
 <canvas id="rain"></canvas>
 
-<div id="dashboard-wrapper">
+<div id="login-box">
+<h2>🔑 Enter Key</h2>
+<input id="key-input" placeholder="Enter your key"><br>
+<button onclick="login()">Login</button>
+<p id="login-status"></p>
+</div>
 
+<div id="dashboard-wrapper">
 <header>🤡 Roba un Payaso Scanner Dashboard</header>
 
 <nav>
@@ -55,15 +61,13 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <button onclick="showTab('helpers')">Helpers</button>
 </nav>
 
-<!-- MAIN TAB -->
-<div id="main" class="tab">
+<div id="main" class="tab active">
 <h2>Overview</h2>
-<p>Active Users: <span id="active-users">0</span></p>
-<p>Bots Active: 4</p>
+<p>Bots Active: <span id="bots-active">4</span></p>
+<p>Users Online: <span id="users-online">0</span></p>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="tab active">
+<div id="dashboard" class="tab">
 <div class="stats">
 <div><div id="total">0</div><div>Total</div></div>
 <div><div id="best">None</div><div>Best</div></div>
@@ -76,7 +80,6 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <div id="old-detections" class="detections"></div>
 </div>
 
-<!-- PRIORITY TAB -->
 <div id="priority" class="tab">
 <h2>Top Priority</h2>
 <h3>New</h3>
@@ -85,7 +88,6 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <div id="priority-old" class="detections"></div>
 </div>
 
-<!-- LEADERBOARD -->
 <div id="leaderboard" class="tab">
 <div class="leaderboards">
 <div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
@@ -95,104 +97,111 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 </div>
 
 <div id="helpers" class="tab"><center>gioyuhh • maico</center></div>
-
 </div>
 
 <script>
-const API = "https://<your-render-service>.onrender.com"; // <--- Put your Render URL here
+const API = "https://<your-render-service>.onrender.com"; // <---- SET YOUR RENDER SERVER HERE
 
-let hasPriorityKey = false;
+// ===== KEY SYSTEM =====
+let userKeyType = null;
+async function login(){
+    const key = document.getElementById("key-input").value.trim();
+    if(!key) return;
+    try{
+        const fingerprint = btoa(navigator.userAgent + screen.width + screen.height + navigator.language);
+        const res = await fetch(API + "/validate", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({key, fingerprint})
+        });
+        const data = await res.json();
+        if(data.status==="ok"){
+            userKeyType = data.type;
+            document.getElementById("login-box").style.display="none";
+            document.getElementById("dashboard-wrapper").style.display="block";
+            loadData();
+            setInterval(loadData,3000);
 
-// ===== KEY LOGIN =====
-window.onload=async()=>{
-let key=prompt("Enter key:");
-if(key==="nexo-22222234"){
-// Dashboard only
-document.getElementById("dashboard-wrapper").style.display="block";
-hasPriorityKey=false;
-await loginKey(key);
-loadData();
-setInterval(loadData,3000);
-}else if(key==="prioissogoated11"){
-// Dashboard + Priority
-document.getElementById("dashboard-wrapper").style.display="block";
-hasPriorityKey=true;
-await loginKey(key);
-loadData();
-setInterval(loadData,3000);
-}else{
-document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
-}
-};
+            // Send webhook for login
+            fetch(API + "/user-visit", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({fingerprint}) });
 
-// Send key to server to validate
-async function loginKey(key){
-try{
-await fetch(API+"/validate",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({key:key,fingerprint:btoa(navigator.userAgent+screen.width+screen.height+navigator.language)})
-});
-}catch(e){console.log("Login API error", e);}
+        }else{
+            document.getElementById("login-status").innerText="❌ Key invalid or used";
+        }
+    }catch(e){
+        console.log(e);
+        document.getElementById("login-status").innerText="❌ Server offline";
+    }
 }
 
-// ===== TABS =====
+// ===== TAB SYSTEM =====
 function showTab(id){
-if(id==="priority" && !hasPriorityKey){
-alert("You need a Top Priority key to access this tab.");
-return;
-}
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-document.getElementById(id).classList.add("active");
+    if(id==="priority" && userKeyType!=="priority"){
+        alert("No Top Priority Key!"); 
+        return;
+    }
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
 }
 
-// ===== UTILITY =====
+// ===== SCANNER LOGIC =====
 function formatGen(g){return g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g;}
-function rarityLabel(g){if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";if(g>=1e5)return"<span class='rarity'>Legendary</span>";if(g>=25000)return"<span class='rarity'>Rare</span>";return"<span class='rarity'>Common</span>";}
+function rarityLabel(g){
+    if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
+    if(g>=1e5)return"<span class='rarity'>Legendary</span>";
+    if(g>=25000)return"<span class='rarity'>Rare</span>";
+    return"<span class='rarity'>Common</span>";
+}
 function copyJob(id){navigator.clipboard.writeText(id);}
 
-// ===== LOAD DATA =====
 async function loadData(){
 try{
-const res=await fetch(API+'/detections');
-const data=await res.json();
+    const res = await fetch(API + '/detections');
+    const data = await res.json();
 
-document.getElementById('total').innerText=data.total||0;
-document.getElementById('best').innerText=data.bestFind?data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
-document.getElementById('active-users').innerText=data.activeUsers||0;
+    document.getElementById('total').innerText = data.total||0;
+    document.getElementById('best').innerText = data.bestFind? data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
+    document.getElementById('users-online').innerText = data.activeUsers||0;
 
-const newC=document.getElementById('new-detections');
-const oldC=document.getElementById('old-detections');
-const pNew=document.getElementById('priority-new');
-const pOld=document.getElementById('priority-old');
+    const newC=document.getElementById('new-detections');
+    const oldC=document.getElementById('old-detections');
+    const pNew=document.getElementById('priority-new');
+    const pOld=document.getElementById('priority-old');
 
-newC.innerHTML=""; oldC.innerHTML=""; pNew.innerHTML=""; pOld.innerHTML="";
+    newC.innerHTML=""; oldC.innerHTML=""; pNew.innerHTML=""; pOld.innerHTML="";
 
-data.detections.forEach(d=>{
-if(d.gen<25000)return;
-const expired=(Date.now()-d.timestamp)/1000>60;
-const card=document.createElement('div'); card.className='card';
-card.innerHTML=`
+    data.detections.forEach(d=>{
+        if(d.gen<25000) return;
+        const expired=(Date.now()-d.timestamp)/1000>60;
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML=`
 <h2>${d.name}</h2>
 <p>Gen: ${formatGen(d.gen)}</p>
 <p>${rarityLabel(d.gen)}</p>
 <p>Owner: ${d.owner||"Unknown"}</p>
-${expired?`<p style="color:red;">Owner left</p>`:`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a><button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}`;
-if(d.gen>=500000){expired?pOld.appendChild(card):pNew.appendChild(card);}else{expired?oldC.appendChild(card):newC.appendChild(card);}
-});
+${expired?`<p style="color:red;">Owner left</p>`:
+`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
+<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
+`;
+        if(d.gen>=500000){expired?pOld.appendChild(card):pNew.appendChild(card);}
+        else{expired?oldC.appendChild(card):newC.appendChild(card);}
+    });
 
-// leaderboards
-const g=document.getElementById('global-finds');
-const p=document.getElementById('prio-finds');
-const t=document.getElementById('top-brainrots');
-g.innerHTML=""; p.innerHTML=""; t.innerHTML="";
-data.detections.slice(0,50).forEach(d=>{g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`;});
-data.detections.filter(d=>d.gen>=500000).sort((a,b)=>b.gen-a.gen).slice(0,50).forEach(d=>{p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;});
-data.detections.sort((a,b)=>b.gen-a.gen).slice(0,10).forEach(d=>{t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;});
+    // leaderboards
+    const g=document.getElementById('global-finds');
+    const p=document.getElementById('prio-finds');
+    const t=document.getElementById('top-brainrots');
+    g.innerHTML=""; p.innerHTML=""; t.innerHTML="";
+    data.detections.slice(0,50).forEach(d=>{g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`});
+    data.detections.filter(d=>d.gen>=500000).sort((a,b)=>b.gen-a.gen).slice(0,50)
+        .forEach(d=>{p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
+    data.detections.sort((a,b)=>b.gen-a.gen).slice(0,10)
+        .forEach(d=>{t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
+
 }catch(e){console.log(e);}
 }
 
-// ===== RAIN =====
+// ===== RAIN EFFECT =====
 const canvas=document.getElementById("rain");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth; canvas.height=window.innerHeight;
