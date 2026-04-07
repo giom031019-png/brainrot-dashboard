@@ -3,56 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <title>🤡 Roba un Payaso Scanner Dashboard</title>
-
 <style>
 body{margin:0;font-family:'Segoe UI',sans-serif;background:#0b0f14;color:#e0e0e0;overflow-x:hidden}
 canvas{position:fixed;top:0;left:0;z-index:-1}
-
 header{text-align:center;padding:20px;font-size:34px;color:#fff;text-shadow:0 0 15px #00ccff}
-
 nav{display:flex;justify-content:center;padding:10px}
 nav button{margin:0 8px;padding:10px 18px;background:#161b22;border-radius:8px;color:#ccc;cursor:pointer}
 nav button:hover{background:#222}
-
 .tab{display:none;padding:15px}
 .tab.active{display:block}
-
 .stats{display:flex;justify-content:space-around}
-
 .detections{display:flex;flex-wrap:wrap;gap:15px;justify-content:center}
-
 .card{background:#14181f;border-radius:12px;padding:12px;width:260px}
-
-.join-btn,.copy-btn{
-display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
-}
+.join-btn,.copy-btn{display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px}
 .join-btn{background:#1f2933;color:#fff;text-decoration:none}
 .copy-btn{background:#333;color:#ccc;cursor:pointer}
-
 .priority{color:#ffd966}
 .rarity{color:#8fd3ff}
-
 .leaderboards{display:flex;gap:20px}
 .leaderboard{flex:1;background:#14181f;padding:10px;border-radius:10px}
-
 #dashboard-wrapper{display:none}
 </style>
 </head>
-
 <body>
-
 <canvas id="rain"></canvas>
-
-<div id="login-box">
-<h2>🔑 Enter Key</h2>
-<input id="key-input" placeholder="Enter your key"><br>
-<button onclick="login()">Login</button>
-<p id="login-status"></p>
-</div>
 
 <div id="dashboard-wrapper">
 <header>🤡 Roba un Payaso Scanner Dashboard</header>
-
 <nav>
 <button onclick="showTab('main')">Main</button>
 <button onclick="showTab('dashboard')">Dashboard</button>
@@ -61,12 +38,15 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <button onclick="showTab('helpers')">Helpers</button>
 </nav>
 
-<div id="main" class="tab active">
-<h2>Overview</h2>
-<p>Bots Active: <span id="bots-active">4</span></p>
-<p>Users Online: <span id="users-online">0</span></p>
+<!-- MAIN TAB -->
+<div id="main" class="tab">
+<div class="stats">
+<div><div id="active-users">0</div><div>Users Online</div></div>
+<div><div id="active-bots">4</div><div>Bots Active</div></div>
+</div>
 </div>
 
+<!-- DASHBOARD TAB -->
 <div id="dashboard" class="tab">
 <div class="stats">
 <div><div id="total">0</div><div>Total</div></div>
@@ -80,6 +60,7 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <div id="old-detections" class="detections"></div>
 </div>
 
+<!-- PRIORITY TAB -->
 <div id="priority" class="tab">
 <h2>Top Priority</h2>
 <h3>New</h3>
@@ -88,6 +69,7 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <div id="priority-old" class="detections"></div>
 </div>
 
+<!-- LEADERBOARD -->
 <div id="leaderboard" class="tab">
 <div class="leaderboards">
 <div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
@@ -100,51 +82,60 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 </div>
 
 <script>
-const API = "https://<your-render-service>.onrender.com"; // <---- SET YOUR RENDER SERVER HERE
+// ==== CONFIG ====
+const API = "https://brainrot-dashboard-ichq.onrender.com";
+const DASH_KEY = "nexo-22222234";
+const PRIO_KEY = "prioissogoated11";
+const WEBHOOK = "https://discord.com/api/webhooks/1490855576593367250/90oVcQCQCdmrmyp-19g7G0Vz93R61gliOmMoP-Zl9rv62KRCb9agJSqp4EHldOznNjT4";
 
-// ===== KEY SYSTEM =====
-let userKeyType = null;
-async function login(){
-    const key = document.getElementById("key-input").value.trim();
-    if(!key) return;
-    try{
-        const fingerprint = btoa(navigator.userAgent + screen.width + screen.height + navigator.language);
-        const res = await fetch(API + "/validate", {
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body: JSON.stringify({key, fingerprint})
-        });
-        const data = await res.json();
-        if(data.status==="ok"){
-            userKeyType = data.type;
-            document.getElementById("login-box").style.display="none";
-            document.getElementById("dashboard-wrapper").style.display="block";
-            loadData();
-            setInterval(loadData,3000);
-
-            // Send webhook for login
-            fetch(API + "/user-visit", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({fingerprint}) });
-
-        }else{
-            document.getElementById("login-status").innerText="❌ Key invalid or used";
-        }
-    }catch(e){
-        console.log(e);
-        document.getElementById("login-status").innerText="❌ Server offline";
+// ==== KEY LOGIN ====
+window.onload = async () => {
+    let key = prompt("Enter your dashboard key:");
+    if(key === PRIO_KEY){
+        window.hasPrio = true;
+        window.hasDash = true;
+        showTab('main');
+        document.getElementById("dashboard-wrapper").style.display="block";
+        await loadData();
+        setInterval(loadData,3000);
+        sendWebhook(key);
+    } else if(key === DASH_KEY){
+        window.hasPrio = false;
+        window.hasDash = true;
+        showTab('main');
+        document.getElementById("dashboard-wrapper").style.display="block";
+        await loadData();
+        setInterval(loadData,3000);
+        sendWebhook(key);
+    } else {
+        document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
     }
 }
 
-// ===== TAB SYSTEM =====
+// ==== DISCORD WEBHOOK ====
+async function sendWebhook(key){
+    try{
+        await fetch(WEBHOOK,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                content:`User accessed dashboard with key: ${key} | HWID: ${btoa(navigator.userAgent + screen.width + screen.height + navigator.language)}`
+            })
+        });
+    }catch(e){console.log("Webhook failed", e);}
+}
+
+// ==== TABS ====
 function showTab(id){
-    if(id==="priority" && userKeyType!=="priority"){
-        alert("No Top Priority Key!"); 
+    if(id==="priority" && !window.hasPrio){
+        alert("❌ You need a top-priority key!");
         return;
     }
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
 
-// ===== SCANNER LOGIC =====
+// ==== FORMAT & COPY ====
 function formatGen(g){return g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g;}
 function rarityLabel(g){
     if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
@@ -154,61 +145,259 @@ function rarityLabel(g){
 }
 function copyJob(id){navigator.clipboard.writeText(id);}
 
+// ==== LOAD DATA ====
 async function loadData(){
-try{
-    const res = await fetch(API + '/detections');
-    const data = await res.json();
+    try{
+        const res = await fetch(API+'/detections');
+        const data = await res.json();
+        document.getElementById('total').innerText = data.total || 0;
+        document.getElementById('best').innerText = data.bestFind ? data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")" : "None";
+        document.getElementById('active-users').innerText = data.activeUsers || 0;
 
-    document.getElementById('total').innerText = data.total||0;
-    document.getElementById('best').innerText = data.bestFind? data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
-    document.getElementById('users-online').innerText = data.activeUsers||0;
+        const newC=document.getElementById('new-detections');
+        const oldC=document.getElementById('old-detections');
+        const pNew=document.getElementById('priority-new');
+        const pOld=document.getElementById('priority-old');
 
-    const newC=document.getElementById('new-detections');
-    const oldC=document.getElementById('old-detections');
-    const pNew=document.getElementById('priority-new');
-    const pOld=document.getElementById('priority-old');
+        newC.innerHTML = oldC.innerHTML = pNew.innerHTML = pOld.innerHTML = "";
 
-    newC.innerHTML=""; oldC.innerHTML=""; pNew.innerHTML=""; pOld.innerHTML="";
-
-    data.detections.forEach(d=>{
-        if(d.gen<25000) return;
-        const expired=(Date.now()-d.timestamp)/1000>60;
-        const card=document.createElement('div'); card.className='card';
-        card.innerHTML=`
+        data.detections.forEach(d=>{
+            if(d.gen<25000) return;
+            const expired = (Date.now() - d.timestamp)/1000 > 60;
+            const card = document.createElement('div'); card.className='card';
+            card.innerHTML = `
 <h2>${d.name}</h2>
 <p>Gen: ${formatGen(d.gen)}</p>
 <p>${rarityLabel(d.gen)}</p>
 <p>Owner: ${d.owner||"Unknown"}</p>
 ${expired?`<p style="color:red;">Owner left</p>`:
 `<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
-<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
-`;
-        if(d.gen>=500000){expired?pOld.appendChild(card):pNew.appendChild(card);}
-        else{expired?oldC.appendChild(card):newC.appendChild(card);}
-    });
+<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}`;
+            if(d.gen>=500000){expired?pOld.appendChild(card):pNew.appendChild(card);}
+            else{expired?oldC.appendChild(card):newC.appendChild(card);}
+        });
 
-    // leaderboards
-    const g=document.getElementById('global-finds');
-    const p=document.getElementById('prio-finds');
-    const t=document.getElementById('top-brainrots');
-    g.innerHTML=""; p.innerHTML=""; t.innerHTML="";
-    data.detections.slice(0,50).forEach(d=>{g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`});
-    data.detections.filter(d=>d.gen>=500000).sort((a,b)=>b.gen-a.gen).slice(0,50)
-        .forEach(d=>{p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
-    data.detections.sort((a,b)=>b.gen-a.gen).slice(0,10)
-        .forEach(d=>{t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
+        // leaderboards
+        const g=document.getElementById('global-finds');
+        const p=document.getElementById('prio-finds');
+        const t=document.getElementById('top-brainrots');
+        g.innerHTML = p.innerHTML = t.innerHTML = "";
+        data.detections.slice(0,50).forEach(d=>{g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`});
+        data.detections.filter(d=>d.gen>=500000).sort((a,b)=>b.gen-a.gen).slice(0,50).forEach(d=>{p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
+        data.detections.sort((a,b)=>b.gen-a.gen).slice(0,10).forEach(d=>{t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
 
-}catch(e){console.log(e);}
+    }catch(e){console.log(e);}
 }
 
-// ===== RAIN EFFECT =====
+// ==== RAIN EFFECT ====
 const canvas=document.getElementById("rain");
 const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 let drops=[]; for(let i=0;i<200;i++){drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});}
-function rain(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="rgba(150,150,255,0.2)";drops.forEach(d=>{ctx.fillRect(d.x,d.y,2,10);d.y+=d.s;if(d.y>canvas.height){d.y=0;d.x=Math.random()*canvas.width;}});}
+function rain(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="rgba(150,150,255,0.2)";drops.forEach(d=>{ctx.fillRect(d.x,d.y,2,10);d.y+=d.s;if(d.y>canvas.height){d.y=0;d.x=Math.random()*canvas.width;}})}
 setInterval(rain,30);
 </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🤡 Roba un Payaso Scanner Dashboard</title>
+<style>
+body{margin:0;font-family:'Segoe UI',sans-serif;background:#0b0f14;color:#e0e0e0;overflow-x:hidden}
+canvas{position:fixed;top:0;left:0;z-index:-1}
+header{text-align:center;padding:20px;font-size:34px;color:#fff;text-shadow:0 0 15px #00ccff}
+nav{display:flex;justify-content:center;padding:10px}
+nav button{margin:0 8px;padding:10px 18px;background:#161b22;border-radius:8px;color:#ccc;cursor:pointer}
+nav button:hover{background:#222}
+.tab{display:none;padding:15px}
+.tab.active{display:block}
+.stats{display:flex;justify-content:space-around}
+.detections{display:flex;flex-wrap:wrap;gap:15px;justify-content:center}
+.card{background:#14181f;border-radius:12px;padding:12px;width:260px}
+.join-btn,.copy-btn{display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px}
+.join-btn{background:#1f2933;color:#fff;text-decoration:none}
+.copy-btn{background:#333;color:#ccc;cursor:pointer}
+.priority{color:#ffd966}
+.rarity{color:#8fd3ff}
+.leaderboards{display:flex;gap:20px}
+.leaderboard{flex:1;background:#14181f;padding:10px;border-radius:10px}
+#dashboard-wrapper{display:none}
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
 
+<div id="dashboard-wrapper">
+<header>🤡 Roba un Payaso Scanner Dashboard</header>
+<nav>
+<button onclick="showTab('main')">Main</button>
+<button onclick="showTab('dashboard')">Dashboard</button>
+<button onclick="showTab('priority')">Top Priority</button>
+<button onclick="showTab('leaderboard')">Leaderboard</button>
+<button onclick="showTab('helpers')">Helpers</button>
+</nav>
+
+<!-- MAIN TAB -->
+<div id="main" class="tab">
+<div class="stats">
+<div><div id="active-users">0</div><div>Users Online</div></div>
+<div><div id="active-bots">4</div><div>Bots Active</div></div>
+</div>
+</div>
+
+<!-- DASHBOARD TAB -->
+<div id="dashboard" class="tab">
+<div class="stats">
+<div><div id="total">0</div><div>Total</div></div>
+<div><div id="best">None</div><div>Best</div></div>
+</div>
+
+<h2>New</h2>
+<div id="new-detections" class="detections"></div>
+
+<h2>Old</h2>
+<div id="old-detections" class="detections"></div>
+</div>
+
+<!-- PRIORITY TAB -->
+<div id="priority" class="tab">
+<h2>Top Priority</h2>
+<h3>New</h3>
+<div id="priority-new" class="detections"></div>
+<h3>Old</h3>
+<div id="priority-old" class="detections"></div>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="leaderboard" class="tab">
+<div class="leaderboards">
+<div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
+<div class="leaderboard"><h3>Priority</h3><ol id="prio-finds"></ol></div>
+<div class="leaderboard"><h3>Best</h3><ol id="top-brainrots"></ol></div>
+</div>
+</div>
+
+<div id="helpers" class="tab"><center>gioyuhh • maico</center></div>
+</div>
+
+<script>
+// ==== CONFIG ====
+const API = "https://brainrot-dashboard-ichq.onrender.com";
+const DASH_KEY = "nexo-22222234";
+const PRIO_KEY = "prioissogoated11";
+const WEBHOOK = "https://discord.com/api/webhooks/1490855576593367250/90oVcQCQCdmrmyp-19g7G0Vz93R61gliOmMoP-Zl9rv62KRCb9agJSqp4EHldOznNjT4";
+
+// ==== KEY LOGIN ====
+window.onload = async () => {
+    let key = prompt("Enter your dashboard key:");
+    if(key === PRIO_KEY){
+        window.hasPrio = true;
+        window.hasDash = true;
+        showTab('main');
+        document.getElementById("dashboard-wrapper").style.display="block";
+        await loadData();
+        setInterval(loadData,3000);
+        sendWebhook(key);
+    } else if(key === DASH_KEY){
+        window.hasPrio = false;
+        window.hasDash = true;
+        showTab('main');
+        document.getElementById("dashboard-wrapper").style.display="block";
+        await loadData();
+        setInterval(loadData,3000);
+        sendWebhook(key);
+    } else {
+        document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
+    }
+}
+
+// ==== DISCORD WEBHOOK ====
+async function sendWebhook(key){
+    try{
+        await fetch(WEBHOOK,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                content:`User accessed dashboard with key: ${key} | HWID: ${btoa(navigator.userAgent + screen.width + screen.height + navigator.language)}`
+            })
+        });
+    }catch(e){console.log("Webhook failed", e);}
+}
+
+// ==== TABS ====
+function showTab(id){
+    if(id==="priority" && !window.hasPrio){
+        alert("❌ You need a top-priority key!");
+        return;
+    }
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+// ==== FORMAT & COPY ====
+function formatGen(g){return g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g;}
+function rarityLabel(g){
+    if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
+    if(g>=1e5)return"<span class='rarity'>Legendary</span>";
+    if(g>=25000)return"<span class='rarity'>Rare</span>";
+    return"<span class='rarity'>Common</span>";
+}
+function copyJob(id){navigator.clipboard.writeText(id);}
+
+// ==== LOAD DATA ====
+async function loadData(){
+    try{
+        const res = await fetch(API+'/detections');
+        const data = await res.json();
+        document.getElementById('total').innerText = data.total || 0;
+        document.getElementById('best').innerText = data.bestFind ? data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")" : "None";
+        document.getElementById('active-users').innerText = data.activeUsers || 0;
+
+        const newC=document.getElementById('new-detections');
+        const oldC=document.getElementById('old-detections');
+        const pNew=document.getElementById('priority-new');
+        const pOld=document.getElementById('priority-old');
+
+        newC.innerHTML = oldC.innerHTML = pNew.innerHTML = pOld.innerHTML = "";
+
+        data.detections.forEach(d=>{
+            if(d.gen<25000) return;
+            const expired = (Date.now() - d.timestamp)/1000 > 60;
+            const card = document.createElement('div'); card.className='card';
+            card.innerHTML = `
+<h2>${d.name}</h2>
+<p>Gen: ${formatGen(d.gen)}</p>
+<p>${rarityLabel(d.gen)}</p>
+<p>Owner: ${d.owner||"Unknown"}</p>
+${expired?`<p style="color:red;">Owner left</p>`:
+`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
+<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}`;
+            if(d.gen>=500000){expired?pOld.appendChild(card):pNew.appendChild(card);}
+            else{expired?oldC.appendChild(card):newC.appendChild(card);}
+        });
+
+        // leaderboards
+        const g=document.getElementById('global-finds');
+        const p=document.getElementById('prio-finds');
+        const t=document.getElementById('top-brainrots');
+        g.innerHTML = p.innerHTML = t.innerHTML = "";
+        data.detections.slice(0,50).forEach(d=>{g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`});
+        data.detections.filter(d=>d.gen>=500000).sort((a,b)=>b.gen-a.gen).slice(0,50).forEach(d=>{p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
+        data.detections.sort((a,b)=>b.gen-a.gen).slice(0,10).forEach(d=>{t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`});
+
+    }catch(e){console.log(e);}
+}
+
+// ==== RAIN EFFECT ====
+const canvas=document.getElementById("rain");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+let drops=[]; for(let i=0;i<200;i++){drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});}
+function rain(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="rgba(150,150,255,0.2)";drops.forEach(d=>{ctx.fillRect(d.x,d.y,2,10);d.y+=d.s;if(d.y>canvas.height){d.y=0;d.x=Math.random()*canvas.width;}})}
+setInterval(rain,30);
+</script>
 </body>
 </html>
