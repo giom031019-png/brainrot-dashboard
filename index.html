@@ -48,11 +48,21 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 <header>🤡 Roba un Payaso Scanner Dashboard</header>
 
 <nav>
+<button onclick="showTab('main')">Main</button>
 <button onclick="showTab('dashboard')">Dashboard</button>
 <button onclick="showTab('priority')">Top Priority</button>
 <button onclick="showTab('leaderboard')">Leaderboard</button>
 <button onclick="showTab('helpers')">Helpers</button>
 </nav>
+
+<!-- MAIN TAB -->
+<div id="main" class="tab">
+<h2>Main Overview</h2>
+<div class="stats">
+<div><div id="users-online">0</div><div>Users Online</div></div>
+<div><div id="bots-active">4</div><div>Bots Active</div></div>
+</div>
+</div>
 
 <div id="dashboard" class="tab active">
 <div class="stats">
@@ -88,41 +98,37 @@ display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 </div>
 
 <script>
-window.onload=()=>{
-const pw=prompt("Enter password:");
-if(pw==="macielissocute"){
-document.getElementById("dashboard-wrapper").style.display="block";
-loadData();
-setInterval(loadData,3000);
-}else{
-document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
-}
+// ===== GUI KEY SYSTEM =====
+window.onload = () => {
+  const key = prompt("Enter key to access the dashboard:");
+  if(key === "nexo-22222234"){
+    document.getElementById("dashboard-wrapper").style.display = "block";
+    loadData();
+    setInterval(loadData, 3000);
+  } else {
+    document.body.innerHTML = "<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
+  }
 };
 
+// ===== TABS =====
 function showTab(id){
-if(id==="priority"){
-const pass=prompt("Enter Top Priority password:");
-if(pass!=="11prio")return;
-}
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
-
-function formatGen(g){
-return g>=1e6?(g/1e6).toFixed(1)+"m":
-g>=1e3?(g/1e3).toFixed(1)+"k":g;
+  if(id==="priority"){
+    alert("Top Priority requires a special key!"); 
+    // you can implement a separate check if you want
+  }
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
+// ===== SCANNER LOGIC =====
+function formatGen(g){return g>=1e6?(g/1e6).toFixed(1)+"m":g>=1e3?(g/1e3).toFixed(1)+"k":g;}
 function rarityLabel(g){
 if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
 if(g>=1e5)return"<span class='rarity'>Legendary</span>";
 if(g>=25000)return"<span class='rarity'>Rare</span>";
 return"<span class='rarity'>Common</span>";
 }
-
-function copyJob(id){
-navigator.clipboard.writeText(id);
-}
+function copyJob(id){navigator.clipboard.writeText(id);}
 
 async function loadData(){
 try{
@@ -130,8 +136,8 @@ const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections')
 const data=await res.json();
 
 document.getElementById('total').innerText=data.total||0;
-document.getElementById('best').innerText=data.bestFind?
-data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
+document.getElementById('best').innerText=data.bestFind?data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
+document.getElementById('users-online').innerText = data.activeUsers || 0;
 
 const newC=document.getElementById('new-detections');
 const oldC=document.getElementById('old-detections');
@@ -197,31 +203,16 @@ t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
 }catch(e){console.log(e);}
 }
 
-// rain
+// ===== RAIN =====
 const canvas=document.getElementById("rain");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
-let drops=[];
-for(let i=0;i<200;i++){
-drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});
-}
-
-function rain(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="rgba(150,150,255,0.2)";
-drops.forEach(d=>{
-ctx.fillRect(d.x,d.y,2,10);
-d.y+=d.s;
-if(d.y>canvas.height){
-d.y=0;
-d.x=Math.random()*canvas.width;
-}
-});
-}
-
+let drops=[];for(let i=0;i<200;i++){drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});}
+function rain(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="rgba(150,150,255,0.2)";drops.forEach(d=>{ctx.fillRect(d.x,d.y,2,10);d.y+=d.s;if(d.y>canvas.height){d.y=0;d.x=Math.random()*canvas.width;}});}
 setInterval(rain,30);
+
 </script>
 
 </body>
