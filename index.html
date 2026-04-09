@@ -20,17 +20,14 @@ body{
   transform:translate(-50%,-50%);
   text-align:center;
 }
-#login input{
+input,button{
   padding:10px;
   border-radius:8px;
   border:none;
 }
-#login button{
-  padding:10px;
-  border:none;
+button{
   background:#00ccff;
   cursor:pointer;
-  border-radius:8px;
 }
 
 /* APP */
@@ -41,11 +38,7 @@ header{
   text-align:center;
   font-size:40px;
   padding:15px;
-  animation:glow 2s infinite alternate;
-}
-@keyframes glow{
-  from{ text-shadow:0 0 10px #00ffea;}
-  to{ text-shadow:0 0 30px #00ccff;}
+  text-shadow:0 0 15px #00ffea;
 }
 
 /* NAV */
@@ -55,12 +48,8 @@ nav{
 }
 nav button{
   margin:5px;
-  padding:10px;
-  border:none;
   background:#111;
   color:#ccc;
-  cursor:pointer;
-  border-radius:6px;
 }
 nav button:hover{
   background:#00ccff;
@@ -71,7 +60,7 @@ nav button:hover{
 .tab{display:none;padding:15px;}
 .tab.active{display:block}
 
-/* DETECTIONS */
+/* CARDS */
 .detections{
   display:flex;
   flex-wrap:wrap;
@@ -83,15 +72,10 @@ nav button:hover{
   padding:10px;
   width:240px;
   border-radius:10px;
-  animation:fade 0.4s;
-}
-@keyframes fade{
-  from{opacity:0; transform:translateY(10px);}
-  to{opacity:1;}
 }
 .card:hover{
-  transform:scale(1.07);
-  box-shadow:0 0 20px #00ffea;
+  transform:scale(1.05);
+  box-shadow:0 0 15px #00ffea;
 }
 
 /* INSANE */
@@ -104,16 +88,6 @@ nav button:hover{
   to{transform:translateX(3px);}
 }
 
-/* BUTTON */
-.copy{
-  background:#333;
-  padding:5px;
-  margin-top:5px;
-  text-align:center;
-  cursor:pointer;
-  border-radius:5px;
-}
-
 /* LEADERBOARD */
 .leaderboard{
   max-width:400px;
@@ -124,11 +98,6 @@ nav button:hover{
   background:#111;
   margin:3px;
   border-radius:6px;
-  animation:slide 0.5s;
-}
-@keyframes slide{
-  from{transform:translateX(-10px);opacity:0;}
-  to{transform:translateX(0);}
 }
 .top1{color:gold;}
 .top2{color:silver;}
@@ -145,18 +114,12 @@ nav button:hover{
   display:none;
   font-size:25px;
   border-radius:10px;
-  animation:pop 0.5s;
-}
-@keyframes pop{
-  from{transform:translate(-50%,-100px);opacity:0;}
-  to{transform:translate(-50%,0);}
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
 <div id="login">
   <h2>Enter Password</h2>
   <input id="pass" type="password">
@@ -164,17 +127,15 @@ nav button:hover{
   <button onclick="login()">Enter</button>
 </div>
 
-<!-- POPUP -->
 <div id="popup">🔥 100M+ DETECTED 🔥</div>
 
-<!-- APP -->
 <div id="app">
 
 <header>🤡 Scanner X</header>
 
 <nav>
 <button onclick="tab('dash')">Dashboard</button>
-<button onclick="tab('prio')">Priority</button>
+<button id="prioBtn" onclick="tab('prio')" style="display:none">Priority</button>
 <button onclick="tab('leader')">Leaderboard</button>
 </nav>
 
@@ -188,7 +149,7 @@ nav button:hover{
 
 <!-- PRIO -->
 <div id="prio" class="tab">
-<h3>New</h3>
+<h3>Priority (25K+)</h3>
 <div id="pnew" class="detections"></div>
 <h3>Old</h3>
 <div id="pold" class="detections"></div>
@@ -202,15 +163,31 @@ nav button:hover{
 </div>
 
 <script>
-const PASSWORD="brainrot"; // 🔑 CHANGE THIS
+const NORMAL_PASS="macielissocute"
+const PRIO_PASS="prio112233"
 
+let isPrio=false
 let seen=new Set()
 let oldList=[]
 
 function login(){
-  if(document.getElementById("pass").value===PASSWORD){
-    document.getElementById("login").style.display="none"
-    document.getElementById("app").style.display="block"
+  const val=document.getElementById("pass").value
+
+  if(val===NORMAL_PASS){
+    start(false)
+  }
+  else if(val===PRIO_PASS){
+    start(true)
+  }
+}
+
+function start(prio){
+  isPrio=prio
+  document.getElementById("login").style.display="none"
+  document.getElementById("app").style.display="block"
+
+  if(prio){
+    document.getElementById("prioBtn").style.display="inline-block"
   }
 }
 
@@ -234,7 +211,7 @@ function makeCard(d){
     ${d.traits}<br>
     ${d.mutation}<br>
     Owner: ${d.owner}
-    <div class="copy" onclick="copy('${d.jobId}')">Copy JobId</div>
+    <div onclick="navigator.clipboard.writeText('${d.jobId}')">Copy JobId</div>
   `
   return div
 }
@@ -243,10 +220,6 @@ function popup(){
   const p=document.getElementById("popup")
   p.style.display="block"
   setTimeout(()=>p.style.display="none",2000)
-}
-
-function copy(t){
-  navigator.clipboard.writeText(t)
 }
 
 async function load(){
@@ -265,11 +238,14 @@ async function load(){
     data.reverse().forEach(d=>{
       const key=d.name+d.gen+d.owner
 
-      const card=makeCard(d)
-
       if(!seen.has(key)){
+        const card=makeCard(d)
         newBox.appendChild(card)
-        if(d.gen>=25000) pnew.appendChild(card.cloneNode(true))
+
+        if(d.gen>=25000){
+          pnew.appendChild(makeCard(d))
+        }
+
         seen.add(key)
         oldList.push(d)
       }
@@ -279,30 +255,35 @@ async function load(){
     pold.innerHTML=""
 
     oldList.slice(-50).forEach(d=>{
-      const card=makeCard(d)
-      oldBox.appendChild(card)
-      if(d.gen>=25000) pold.appendChild(card.cloneNode(true))
+      oldBox.appendChild(makeCard(d))
+      if(d.gen>=25000){
+        pold.appendChild(makeCard(d))
+      }
     })
 
-    leaderboard(oldList)
+    updateLeaderboard(oldList)
 
   }catch(e){}
 }
 
-function leaderboard(list){
+function updateLeaderboard(list){
   const board=document.getElementById("board")
   board.innerHTML=""
 
-  list.sort((a,b)=>b.gen-a.gen).slice(0,10).forEach((d,i)=>{
-    const li=document.createElement("li")
-    li.innerText=`${d.name} - ${d.gen}`
+  list
+    .slice()
+    .sort((a,b)=>b.gen-a.gen)
+    .slice(0,10)
+    .forEach((d,i)=>{
+      const li=document.createElement("li")
+      li.innerText=`${d.name} - ${d.gen}`
 
-    if(i===0) li.classList.add("top1")
-    if(i===1) li.classList.add("top2")
-    if(i===2) li.classList.add("top3")
+      if(i===0) li.classList.add("top1")
+      if(i===1) li.classList.add("top2")
+      if(i===2) li.classList.add("top3")
 
-    board.appendChild(li)
-  })
+      board.appendChild(li)
+    })
 }
 
 setInterval(load,2000)
