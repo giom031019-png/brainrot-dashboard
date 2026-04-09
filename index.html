@@ -1,6 +1,6 @@
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>🤡 Scanner X</title>
@@ -8,61 +8,56 @@
 <style>
 body{
   margin:0;
-  font-family:'Segoe UI';
+  font-family:Segoe UI;
   background:#0a0c10;
-  color:#e0e0e0;
+  color:#eee;
+}
+
+/* LOGIN */
+#login{
+  position:fixed;
+  top:40%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+input{
+  padding:10px;
+  border-radius:6px;
+  border:none;
+}
+button{
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  background:#00ccff;
+  cursor:pointer;
 }
 
 /* HEADER */
 header{
   text-align:center;
-  padding:20px;
   font-size:40px;
+  padding:15px;
   text-shadow:0 0 20px #00ffea;
 }
 
-/* NAV */
-nav{
-  display:flex;
-  justify-content:center;
-}
-nav button{
-  margin:5px;
-  padding:10px 18px;
-  background:#11161f;
-  border-radius:8px;
-  color:#ccc;
-  cursor:pointer;
-}
-nav button:hover{
-  background:#00ccff;
-  color:#000;
-}
-
 /* TABS */
-.tab{display:none;padding:15px;}
-.tab.active{display:block;}
-
-/* STATS */
-.stats{
-  display:flex;
-  justify-content:space-around;
-  margin-bottom:10px;
-}
+.tab{display:none;padding:10px;}
+.active{display:block;}
 
 /* CARDS */
 .detections{
   display:flex;
   flex-wrap:wrap;
-  gap:12px;
+  gap:10px;
   justify-content:center;
 }
 .card{
   background:#14181f;
-  border-radius:12px;
-  padding:12px;
-  width:260px;
-  transition:.3s;
+  padding:10px;
+  border-radius:10px;
+  width:240px;
 }
 .card:hover{
   transform:scale(1.05);
@@ -72,7 +67,7 @@ nav button:hover{
 /* INSANE */
 .insane{
   animation:shake 0.3s infinite alternate;
-  box-shadow:0 0 30px red;
+  box-shadow:0 0 40px red;
 }
 @keyframes shake{
   0%{transform:translateX(-2px);}
@@ -80,23 +75,13 @@ nav button:hover{
 }
 
 /* LEADERBOARD */
-.leaderboards{display:flex;gap:15px;}
-.leaderboard{
-  background:#14181f;
-  padding:10px;
-  border-radius:12px;
-}
-.leaderboard ol{
-  list-style:none;
-  padding:0;
-}
-.leaderboard li{
+#leaderboard li{
+  margin:5px;
   padding:5px;
-  margin:2px 0;
-  background:#11161f;
   border-radius:6px;
+  background:#111;
 }
-.top1{color:gold;}
+.top1{color:gold;font-size:18px;}
 .top2{color:silver;}
 .top3{color:#cd7f32;}
 </style>
@@ -104,165 +89,133 @@ nav button:hover{
 
 <body>
 
+<!-- LOGIN -->
+<div id="login">
+  <h2>Enter Key</h2>
+  <input id="keyInput">
+  <br><br>
+  <button onclick="login()">Enter</button>
+</div>
+
+<div id="app" style="display:none">
 <header>🤡 Scanner X</header>
 
-<nav>
-  <button onclick="tab('dash')">Dashboard</button>
-  <button onclick="tab('prio')">Priority</button>
-  <button onclick="tab('leader')">Leaderboard</button>
-</nav>
-
-<!-- NORMAL -->
 <div id="dash" class="tab active">
-  <div class="stats">
-    <div id="total">Total: 0</div>
-    <div id="best">Best: None</div>
-  </div>
+  <h3>Dashboard</h3>
   <div id="new" class="detections"></div>
-  <h3 style="text-align:center;">Old Detections</h3>
+  <h3>Old</h3>
   <div id="old" class="detections"></div>
 </div>
 
-<!-- PRIO -->
 <div id="prio" class="tab">
-  <div class="stats">
-    <div id="ptotal">Total: 0</div>
-    <div id="pbest">Best: None</div>
-  </div>
+  <h3>Priority</h3>
   <div id="pnew" class="detections"></div>
-  <h3 style="text-align:center;">Old Priority</h3>
+  <h3>Old</h3>
   <div id="pold" class="detections"></div>
 </div>
 
-<!-- LEADERBOARD -->
 <div id="leader" class="tab">
-  <div class="leaderboards">
-    <div class="leaderboard">
-      <h3>Top Finds</h3>
-      <ol id="top"></ol>
-    </div>
-  </div>
+  <h3>🏆 Leaderboard</h3>
+  <ol id="leaderboard"></ol>
+</div>
 </div>
 
 <script>
-const API = "https://YOUR-RENDER-URL.onrender.com/detections"
+const API="https://YOUR-RENDER-URL.onrender.com/detections"
 
-let all = []
-let oldNormal = []
-let oldPrio = []
+let oldN=[], oldP=[], seen=[]
 
-function tab(id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
-  document.getElementById(id).classList.add('active')
+function login(){
+  const key=document.getElementById("keyInput").value
+
+  if(key==="macielissocute"){
+    document.getElementById("login").style.display="none"
+    document.getElementById("app").style.display="block"
+    document.getElementById("dash").classList.add("active")
+  }
+  else if(key==="prio112233"){
+    document.getElementById("login").style.display="none"
+    document.getElementById("app").style.display="block"
+    document.getElementById("prio").classList.add("active")
+  }
+  else{
+    alert("Wrong key")
+  }
 }
 
-function makeCard(d, isPrio){
+function makeCard(d,isPrio){
   const div=document.createElement("div")
   div.className="card"
 
-  if(d.gen>=100000000){
-    div.classList.add("insane")
-  }
+  if(d.gen>=100000000) div.classList.add("insane")
 
   div.innerHTML=`
     <b>${d.name}</b><br>
     ${d.gen}<br>
-    ${d.traits}<br>
-    ${d.mutation}<br>
     Owner: ${d.owner}<br>
-    <div onclick="navigator.clipboard.writeText('${d.jobId}')">📋 Copy JobId</div>
+    <div onclick="navigator.clipboard.writeText('${d.jobId}')">📋 Copy</div>
   `
 
-  // 🔥 MOVE TO OLD AFTER 60s
   setTimeout(()=>{
     div.remove()
-
-    if(isPrio){
-      oldPrio.unshift(d)
-      renderOldPrio()
-    }else{
-      oldNormal.unshift(d)
-      renderOldNormal()
-    }
-
+    if(isPrio){ oldP.unshift(d); renderOldP() }
+    else{ oldN.unshift(d); renderOldN() }
   },60000)
 
   return div
 }
 
-function renderOldNormal(){
-  const old=document.getElementById("old")
-  old.innerHTML=""
-  oldNormal.slice(0,50).forEach(d=>{
-    old.appendChild(makeStaticCard(d))
-  })
+function renderOldN(){
+  const el=document.getElementById("old")
+  el.innerHTML=""
+  oldN.slice(0,50).forEach(d=>el.appendChild(makeStatic(d)))
 }
 
-function renderOldPrio(){
-  const old=document.getElementById("pold")
-  old.innerHTML=""
-  oldPrio.slice(0,50).forEach(d=>{
-    old.appendChild(makeStaticCard(d))
-  })
+function renderOldP(){
+  const el=document.getElementById("pold")
+  el.innerHTML=""
+  oldP.slice(0,50).forEach(d=>el.appendChild(makeStatic(d)))
 }
 
-function makeStaticCard(d){
+function makeStatic(d){
   const div=document.createElement("div")
   div.className="card"
-  div.innerHTML=`
-    <b>${d.name}</b><br>
-    ${d.gen}<br>
-    Owner: ${d.owner}<br>
-    <div onclick="navigator.clipboard.writeText('${d.jobId}')">📋 Copy JobId</div>
-  `
+  div.innerHTML=`${d.name}<br>${d.gen}`
   return div
 }
 
 async function fetchData(){
-  try{
-    const res = await fetch(API)
-    const data = await res.json()
+  const res=await fetch(API)
+  const data=await res.json()
 
-    document.getElementById("total").innerText = "Total: " + data.total
-    document.getElementById("best").innerText = data.bestFind 
-      ? "Best: " + data.bestFind.name + " (" + data.bestFind.gen + ")"
-      : "Best: None"
+  data.detections.slice(-10).forEach(d=>{
+    if(seen.includes(d.timestamp)) return
+    seen.push(d.timestamp)
 
-    document.getElementById("ptotal").innerText = "Total: " + data.total
+    if(d.gen>=2500000){
+      document.getElementById("pnew").prepend(makeCard(d,true))
+    }else if(d.gen>=50000){
+      document.getElementById("new").prepend(makeCard(d,false))
+    }
+  })
 
-    const newDiv = document.getElementById("new")
-    const pnewDiv = document.getElementById("pnew")
-
-    data.detections.slice(-10).forEach(d=>{
-      if(all.includes(d.timestamp)) return
-      all.push(d.timestamp)
-
-      if(d.gen >= 2500000){
-        pnewDiv.prepend(makeCard(d,true))
-      }else if(d.gen >= 50000){
-        newDiv.prepend(makeCard(d,false))
-      }
-    })
-
-    updateLeaderboard(data.detections)
-
-  }catch(e){}
+  updateLeaderboard(data.detections)
 }
 
 function updateLeaderboard(list){
   const sorted=[...list].sort((a,b)=>b.gen-a.gen).slice(0,10)
-  const top=document.getElementById("top")
-  top.innerHTML=""
+  const lb=document.getElementById("leaderboard")
+  lb.innerHTML=""
 
   sorted.forEach((d,i)=>{
     const li=document.createElement("li")
-    li.innerText = `${d.name} (${d.gen})`
+    li.innerText=`${d.name} (${d.gen})`
 
     if(i==0) li.classList.add("top1")
     if(i==1) li.classList.add("top2")
     if(i==2) li.classList.add("top3")
 
-    top.appendChild(li)
+    lb.appendChild(li)
   })
 }
 
@@ -271,3 +224,4 @@ setInterval(fetchData,2000)
 
 </body>
 </html>
+```
