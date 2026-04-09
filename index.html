@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>🤡 Scanner X</title>
@@ -7,9 +7,16 @@
 <style>
 body{
   margin:0;
-  font-family:Segoe UI;
+  font-family:'Segoe UI';
   background:#0a0c10;
-  color:#eee;
+  color:#e0e0e0;
+  overflow-x:hidden;
+  animation:bgPulse 8s infinite alternate;
+}
+@keyframes bgPulse{
+  0%{background:#0a0c10}
+  50%{background:#05070a}
+  100%{background:#0a0c10}
 }
 
 /* LOGIN */
@@ -19,6 +26,7 @@ body{
   left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
+  animation:fadeIn 1s;
 }
 input{
   padding:10px;
@@ -31,62 +39,156 @@ button{
   border-radius:6px;
   background:#00ccff;
   cursor:pointer;
+  transition:.3s;
+}
+button:hover{
+  transform:scale(1.1);
+  background:#00ffea;
 }
 
 /* HEADER */
 header{
   text-align:center;
+  padding:20px;
   font-size:40px;
-  padding:15px;
-  text-shadow:0 0 20px #00ffea;
+  animation:glowHeader 2s infinite alternate, floatHeader 4s infinite alternate;
+}
+@keyframes glowHeader{
+  0%{text-shadow:0 0 10px #00ffea;}
+  50%{text-shadow:0 0 30px #00ccff;}
+  100%{text-shadow:0 0 10px #00ffea;}
+}
+@keyframes floatHeader{
+  0%{transform: translateY(0px)}
+  50%{transform: translateY(-10px)}
+  100%{transform: translateY(0px)}
+}
+
+/* NAV */
+nav{
+  display:flex;
+  justify-content:center;
+  margin-bottom:10px;
+}
+nav button{
+  margin:5px;
+  padding:10px 18px;
+  background:#11161f;
+  border-radius:8px;
+  color:#ccc;
+}
+nav button:hover{
+  transform:scale(1.15);
+  background:#00ccff;
+  color:#000;
 }
 
 /* TABS */
-.tab{display:none;padding:10px;}
-.active{display:block;}
+.tab{display:none;padding:15px;animation:fadeIn 0.5s;}
+.tab.active{display:block;}
+
+@keyframes fadeIn{
+  0%{opacity:0;transform:translateY(10px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+
+/* STATS */
+.stats{
+  display:flex;
+  justify-content:space-around;
+  margin-bottom:10px;
+}
 
 /* CARDS */
 .detections{
   display:flex;
   flex-wrap:wrap;
-  gap:10px;
+  gap:12px;
   justify-content:center;
 }
 .card{
   background:#14181f;
-  padding:10px;
-  border-radius:10px;
-  width:240px;
+  border-radius:12px;
+  padding:12px;
+  width:260px;
+  transition:.3s;
+  position:relative;
 }
 .card:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 20px #00ffea;
+  transform:scale(1.08);
+  box-shadow:0 0 25px #00ffea,0 0 50px #00ccff;
 }
 
 /* INSANE */
 .insane{
-  animation:shake 0.3s infinite alternate;
-  box-shadow:0 0 40px red;
+  animation:insanePulse 0.5s infinite alternate, shake 0.4s infinite;
+}
+@keyframes insanePulse{
+  0%{box-shadow:0 0 20px red;}
+  100%{box-shadow:0 0 50px yellow;}
 }
 @keyframes shake{
-  0%{transform:translateX(-2px);}
-  100%{transform:translateX(2px);}
+  0%{transform:translateX(-3px);}
+  100%{transform:translateX(3px);}
 }
 
 /* LEADERBOARD */
-#leaderboard li{
-  margin:5px;
-  padding:5px;
-  border-radius:6px;
-  background:#111;
+.leaderboards{
+  display:flex;
+  justify-content:center;
 }
-.top1{color:gold;font-size:18px;}
+.leaderboard{
+  background:#14181f;
+  padding:10px;
+  border-radius:12px;
+}
+.leaderboard li{
+  padding:5px;
+  margin:3px 0;
+  background:#11161f;
+  border-radius:6px;
+  transition:.3s;
+}
+.leaderboard li:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 10px #00ffea;
+}
+.top1{animation:rainbow 2s infinite;font-weight:bold;}
 .top2{color:silver;}
 .top3{color:#cd7f32;}
+
+@keyframes rainbow{
+  0%{color:red;}
+  25%{color:orange;}
+  50%{color:yellow;}
+  75%{color:green;}
+  100%{color:red;}
+}
+
+/* POPUP */
+#popup{
+  position:fixed;
+  top:20%;
+  left:50%;
+  transform:translateX(-50%);
+  padding:20px;
+  background:red;
+  color:white;
+  font-size:28px;
+  display:none;
+  border-radius:12px;
+  animation:pop 0.5s ease;
+}
+@keyframes pop{
+  0%{transform:translate(-50%,-100px);opacity:0}
+  100%{transform:translate(-50%,0);opacity:1}
+}
 </style>
 </head>
 
 <body>
+
+<div id="popup">🔥 INSANEEE 100M+ DETECTED 🔥</div>
 
 <!-- LOGIN -->
 <div id="login">
@@ -97,32 +199,64 @@ header{
 </div>
 
 <div id="app" style="display:none">
+
 <header>🤡 Scanner X</header>
 
+<nav>
+  <button onclick="tab('dash')">Dashboard</button>
+  <button onclick="tab('prio')">Priority</button>
+  <button onclick="tab('leader')">Leaderboard</button>
+</nav>
+
+<!-- DASH -->
 <div id="dash" class="tab active">
-  <h3>Dashboard</h3>
+  <div class="stats">
+    <div id="total">Total: 0</div>
+    <div id="best">Best: None</div>
+  </div>
   <div id="new" class="detections"></div>
-  <h3>Old</h3>
+  <h3 style="text-align:center;">Old</h3>
   <div id="old" class="detections"></div>
 </div>
 
+<!-- PRIO -->
 <div id="prio" class="tab">
-  <h3>Priority</h3>
+  <div class="stats">
+    <div id="ptotal">Total: 0</div>
+    <div id="pbest">Best: None</div>
+  </div>
   <div id="pnew" class="detections"></div>
-  <h3>Old</h3>
+  <h3 style="text-align:center;">Old</h3>
   <div id="pold" class="detections"></div>
 </div>
 
+<!-- LEADERBOARD -->
 <div id="leader" class="tab">
-  <h3>🏆 Leaderboard</h3>
-  <ol id="leaderboard"></ol>
+  <div class="leaderboards">
+    <div class="leaderboard">
+      <h3>🏆 Top Finds</h3>
+      <ol id="leaderboard"></ol>
+    </div>
+  </div>
 </div>
+
 </div>
 
 <script>
-const API="https://YOUR-RENDER-URL.onrender.com/detections"
+const API="https://brainrot-dashboard-ichq.onrender.com"
 
 let oldN=[], oldP=[], seen=[]
+
+function tab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
+}
+
+function popup(){
+  const p=document.getElementById("popup")
+  p.style.display="block"
+  setTimeout(()=>p.style.display="none",2000)
+}
 
 function login(){
   const key=document.getElementById("keyInput").value
@@ -130,29 +264,32 @@ function login(){
   if(key==="macielissocute"){
     document.getElementById("login").style.display="none"
     document.getElementById("app").style.display="block"
-    document.getElementById("dash").classList.add("active")
+    tab('dash')
   }
   else if(key==="prio112233"){
     document.getElementById("login").style.display="none"
     document.getElementById("app").style.display="block"
-    document.getElementById("prio").classList.add("active")
+    tab('prio')
   }
-  else{
-    alert("Wrong key")
-  }
+  else alert("Wrong key")
 }
 
 function makeCard(d,isPrio){
   const div=document.createElement("div")
   div.className="card"
 
-  if(d.gen>=100000000) div.classList.add("insane")
+  if(d.gen>=100000000){
+    div.classList.add("insane")
+    popup()
+  }
 
   div.innerHTML=`
     <b>${d.name}</b><br>
     ${d.gen}<br>
+    ${d.traits}<br>
+    ${d.mutation}<br>
     Owner: ${d.owner}<br>
-    <div onclick="navigator.clipboard.writeText('${d.jobId}')">📋 Copy</div>
+    <div onclick="navigator.clipboard.writeText('${d.jobId}')">📋 Copy JobId</div>
   `
 
   setTimeout(()=>{
@@ -179,26 +316,39 @@ function renderOldP(){
 function makeStatic(d){
   const div=document.createElement("div")
   div.className="card"
-  div.innerHTML=`${d.name}<br>${d.gen}`
+  div.innerHTML=`
+    <b>${d.name}</b><br>
+    ${d.gen}<br>
+    Owner: ${d.owner}<br>
+    <div onclick="navigator.clipboard.writeText('${d.jobId}')">📋 Copy</div>
+  `
   return div
 }
 
 async function fetchData(){
-  const res=await fetch(API)
-  const data=await res.json()
+  try{
+    const res=await fetch(API)
+    const data=await res.json()
 
-  data.detections.slice(-10).forEach(d=>{
-    if(seen.includes(d.timestamp)) return
-    seen.push(d.timestamp)
+    document.getElementById("total").innerText="Total: "+data.total
+    document.getElementById("best").innerText=data.bestFind ? "Best: "+data.bestFind.name+" ("+data.bestFind.gen+")":"Best: None"
+    document.getElementById("ptotal").innerText="Total: "+data.total
+    document.getElementById("pbest").innerText=data.bestFind ? "Best: "+data.bestFind.name+" ("+data.bestFind.gen+")":"Best: None"
 
-    if(d.gen>=2500000){
-      document.getElementById("pnew").prepend(makeCard(d,true))
-    }else if(d.gen>=50000){
-      document.getElementById("new").prepend(makeCard(d,false))
-    }
-  })
+    data.detections.slice(-10).forEach(d=>{
+      if(seen.includes(d.timestamp)) return
+      seen.push(d.timestamp)
 
-  updateLeaderboard(data.detections)
+      if(d.gen>=2500000){
+        document.getElementById("pnew").prepend(makeCard(d,true))
+      }else if(d.gen>=50000){
+        document.getElementById("new").prepend(makeCard(d,false))
+      }
+    })
+
+    updateLeaderboard(data.detections)
+
+  }catch(e){}
 }
 
 function updateLeaderboard(list){
