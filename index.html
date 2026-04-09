@@ -116,13 +116,23 @@ nav button:hover{
   transform:scale(1.08);
   box-shadow:0 0 25px #00ffea,0 0 50px #00ccff;
 }
+
+/* INSANEEE ANIMATIONS */
 .insane{
-  animation:insaneFlash 0.4s infinite alternate;
+  animation:insanePulse 0.5s infinite alternate, insaneShake 0.5s infinite alternate;
+  position:relative;
 }
-@keyframes insaneFlash{
-  0%{box-shadow:0 0 20px red;}
-  50%{box-shadow:0 0 40px yellow;}
-  100%{box-shadow:0 0 20px red;}
+@keyframes insanePulse{
+  0%{box-shadow:0 0 20px red, 0 0 50px yellow;}
+  50%{box-shadow:0 0 40px red,0 0 80px yellow;}
+  100%{box-shadow:0 0 20px red,0 0 50px yellow;}
+}
+@keyframes insaneShake{
+  0%{transform:translateX(0px);}
+  25%{transform:translateX(-3px);}
+  50%{transform:translateX(3px);}
+  75%{transform:translateX(-3px);}
+  100%{transform:translateX(0px);}
 }
 
 /* BUTTONS */
@@ -195,8 +205,8 @@ nav button:hover{
 }
 </style>
 </head>
-
 <body>
+
 <div id="popup">🔥 INSANEEE 100M+ DETECTED 🔥</div>
 
 <div id="app" style="display:none">
@@ -241,7 +251,6 @@ nav button:hover{
 const API="https://brainrot-dashboard-ichq.onrender.com/detections";
 const WEBHOOK="https://discord.com/api/webhooks/1490855576593367250/90oVcQCQCdmrmyp-19g7G0Vz93R61gliOmMoP-Zl9rv62KRCb9agJSqp4EHldOznNjT4";
 
-// Generate basic HWID using browser fingerprint
 function generateHWID(){
   return btoa(navigator.userAgent + navigator.language + screen.width + screen.height + Date.now());
 }
@@ -261,7 +270,6 @@ function generateHWID(){
   document.getElementById("app").style.display="block";
   if(type==="prio") document.getElementById("prioBtn").style.display="inline";
 
-  // Send login info to webhook
   try{
     const ipRes = await fetch("https://api.ipify.org?format=json");
     const ipData = await ipRes.json();
@@ -279,18 +287,15 @@ function generateHWID(){
   setInterval(load,1000);
 })();
 
-// Tabs
 function tab(t){
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
   document.getElementById(t).classList.add("active");
 }
 
-// Utils
 function format(g){return g>=1e6?(g/1e6).toFixed(1)+"M":g>=1e3?(g/1e3).toFixed(1)+"K":g;}
 function rarity(g){if(g>=100000000)return"INSANEEE";if(g>=1000000)return"BEST";if(g>=25000)return"RARE";return"COMMON";}
 function copy(id){navigator.clipboard.writeText(id);}
 
-// LOAD DATA
 async function load(){
   let res=await fetch(API);
   let json=await res.json();
@@ -315,48 +320,40 @@ async function load(){
   pnewC.innerHTML=""; poldC.innerHTML="";
   globalEl.innerHTML=""; prioListEl.innerHTML=""; topEl.innerHTML="";
 
-  // Normal stats
   const normalData = data.filter(d=>d.gen>=50000 && d.gen<=2500000);
   totalEl.innerText="Brainrots Detected: "+normalData.length;
   bestEl.innerText=normalData.find(d=>d.gen>=1000000)?`Best: ${normalData.find(d=>d.gen>=1000000).name} ${format(normalData.find(d=>d.gen>=1000000).gen)}`:"Best: None";
 
-  // Priority stats
   const prioData = data.filter(d=>d.gen>=1000000);
   ptotalEl.innerText="Brainrots Detected: "+prioData.length;
   pbestEl.innerText=prioData.find(d=>d.gen>=100000000)?`Best: ${prioData.find(d=>d.gen>=100000000).name} ${format(prioData.find(d=>d.gen>=100000000).gen)}`:"Best: None";
 
-  // Leaderboards
   let sorted=data.slice().sort((a,b)=>b.gen-a.gen);
   sorted.slice(0,50).forEach(d=>globalEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`);
   sorted.filter(d=>d.gen>=1000000).forEach(d=>prioListEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`);
   sorted.slice(0,10).forEach(d=>topEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`);
 
-  // Cards
   function createCard(d){
     let expired=(Date.now()-d.timestamp)/1000>60;
-    let isPrio=d.gen>=1000000;
     let insane=d.gen>=100000000;
     if(insane){popup.style.display="block"; setTimeout(()=>popup.style.display="none",2000);}
-
     let card=`<div class="card ${insane?"insane":""}">
       <h2>${d.name}</h2>
       <p>${format(d.gen)}</p>
       <p>${rarity(d.gen)}</p>
-      ${!expired?`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a><button class="copy-btn" onclick="copy('${d.jobId}')">Copy Job ID</button>`:`<p style="color:red">Owner Left</p>`}
+      ${!expired?`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
+      <button class="copy-btn" onclick="copy('${d.jobId}')">Copy Job ID</button>`:`<p style="color:red">Owner Left</p>`}
     </div>`;
-    return {card, expired};
+    return {card, expired, insane};
   }
 
   normalData.forEach(d=>{
     let {card, expired}=createCard(d);
-    if(expired) oldC.innerHTML+=card;
-    else newC.innerHTML+=card;
+    if(expired) oldC.innerHTML+=card; else newC.innerHTML+=card;
   });
-
   prioData.forEach(d=>{
     let {card, expired}=createCard(d);
-    if(expired) poldC.innerHTML+=card;
-    else pnewC.innerHTML+=card;
+    if(expired) poldC.innerHTML+=card; else pnewC.innerHTML+=card;
   });
 }
 </script>
