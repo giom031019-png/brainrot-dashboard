@@ -25,12 +25,8 @@ input,button{
   border-radius:8px;
   border:none;
 }
-button{
-  background:#00ccff;
-  cursor:pointer;
-}
+button{background:#00ccff;cursor:pointer;}
 
-/* APP */
 #app{display:none}
 
 /* HEADER */
@@ -121,7 +117,7 @@ nav button:hover{
 <body>
 
 <div id="login">
-  <h2>Enter Password</h2>
+  <h2>Password</h2>
   <input id="pass" type="password">
   <br><br>
   <button onclick="login()">Enter</button>
@@ -139,7 +135,7 @@ nav button:hover{
 <button onclick="tab('leader')">Leaderboard</button>
 </nav>
 
-<!-- DASH -->
+<!-- NORMAL -->
 <div id="dash" class="tab active">
 <h3>New</h3>
 <div id="new" class="detections"></div>
@@ -147,15 +143,15 @@ nav button:hover{
 <div id="old" class="detections"></div>
 </div>
 
-<!-- PRIO -->
+<!-- PRIORITY -->
 <div id="prio" class="tab">
-<h3>Priority (25K+)</h3>
+<h3>2.5M+</h3>
 <div id="pnew" class="detections"></div>
 <h3>Old</h3>
 <div id="pold" class="detections"></div>
 </div>
 
-<!-- LEADER -->
+<!-- LEADERBOARD -->
 <div id="leader" class="tab">
 <ul id="board" class="leaderboard"></ul>
 </div>
@@ -166,17 +162,16 @@ nav button:hover{
 const NORMAL_PASS="macielissocute"
 const PRIO_PASS="prio112233"
 
-let isPrio=false
 let seen=new Set()
 let oldList=[]
+let isPrio=false
 
 function login(){
   const val=document.getElementById("pass").value
 
   if(val===NORMAL_PASS){
     start(false)
-  }
-  else if(val===PRIO_PASS){
+  } else if(val===PRIO_PASS){
     start(true)
   }
 }
@@ -236,18 +231,21 @@ async function load(){
     pnew.innerHTML=""
 
     data.reverse().forEach(d=>{
+      if(!d.gen) return
+
       const key=d.name+d.gen+d.owner
 
       if(!seen.has(key)){
-        const card=makeCard(d)
-        newBox.appendChild(card)
-
-        if(d.gen>=25000){
-          pnew.appendChild(makeCard(d))
-        }
-
         seen.add(key)
         oldList.push(d)
+
+        if(d.gen>=50000 && d.gen<2500000){
+          newBox.appendChild(makeCard(d))
+        }
+
+        if(d.gen>=2500000){
+          pnew.appendChild(makeCard(d))
+        }
       }
     })
 
@@ -255,8 +253,10 @@ async function load(){
     pold.innerHTML=""
 
     oldList.slice(-50).forEach(d=>{
-      oldBox.appendChild(makeCard(d))
-      if(d.gen>=25000){
+      if(d.gen>=50000 && d.gen<2500000){
+        oldBox.appendChild(makeCard(d))
+      }
+      if(d.gen>=2500000){
         pold.appendChild(makeCard(d))
       }
     })
@@ -271,7 +271,7 @@ function updateLeaderboard(list){
   board.innerHTML=""
 
   list
-    .slice()
+    .filter(d=>d.gen)
     .sort((a,b)=>b.gen-a.gen)
     .slice(0,10)
     .forEach((d,i)=>{
