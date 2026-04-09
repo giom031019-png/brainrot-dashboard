@@ -4,199 +4,237 @@
 <meta charset="UTF-8">
 <title>🤡 Scanner X</title>
 <style>
+/* GLOBAL STYLES */
 body{
-margin:0;
-font-family:'Segoe UI';
-background:#05070a;
-color:#e0e0e0;
-overflow-x:hidden;
-animation:bgPulse 6s infinite alternate;
-transition: background 0.5s;
+  margin:0;
+  font-family:'Segoe UI';
+  background:#0a0c10;
+  color:#e0e0e0;
+  overflow-x:hidden;
+  animation:bgPulse 8s infinite alternate;
 }
 @keyframes bgPulse{
-0%{background:#05070a}
-50%{background:#0c121a}
-100%{background:#05070a}
+  0%{background:#0a0c10}
+  50%{background:#05070a}
+  100%{background:#0a0c10}
 }
-canvas{position:fixed;top:0;left:0;z-index:-1}
 
 /* HEADER */
 header{
-text-align:center;
-padding:20px;
-font-size:36px;
-animation:glow 2s infinite alternate, floatHeader 5s infinite alternate;
+  text-align:center;
+  padding:20px;
+  font-size:40px;
+  animation:glowHeader 2s infinite alternate, floatHeader 4s infinite alternate;
 }
-@keyframes glow{
-0%{text-shadow:0 0 10px #00ccff}
-50%{text-shadow:0 0 25px #00ccff,0 0 40px #00ffea}
-100%{text-shadow:0 0 10px #00ccff}
+@keyframes glowHeader{
+  0%{text-shadow:0 0 10px #00ffea,0 0 20px #00ccff;}
+  50%{text-shadow:0 0 25px #00ffea,0 0 50px #00ccff;}
+  100%{text-shadow:0 0 10px #00ffea,0 0 20px #00ccff;}
 }
 @keyframes floatHeader{
-0%{transform: translateY(0px)}
-50%{transform: translateY(-10px)}
-100%{transform: translateY(0px)}
+  0%{transform: translateY(0px)}
+  50%{transform: translateY(-12px)}
+  100%{transform: translateY(0px)}
 }
 
-/* NAV */
-nav{display:flex;justify-content:center;animation:navPulse 3s infinite alternate;}
+/* NAVIGATION */
+nav{
+  display:flex;
+  justify-content:center;
+  margin-bottom:10px;
+  animation:navPulse 3s infinite alternate;
+}
 @keyframes navPulse{
-0%{transform:scale(1)}
-50%{transform:scale(1.03)}
-100%{transform:scale(1)}
+  0%{transform:scale(1)}
+  50%{transform:scale(1.03)}
+  100%{transform:scale(1)}
 }
 nav button{
-margin:5px;
-padding:10px 18px;
-background:#161b22;
-border-radius:8px;
-color:#ccc;
-cursor:pointer;
-transition:.3s;
-animation:btnPulse 2s infinite alternate;
+  margin:5px;
+  padding:10px 18px;
+  background:#11161f;
+  border-radius:8px;
+  color:#ccc;
+  cursor:pointer;
+  transition:.3s;
+  animation:btnPulse 2s infinite alternate;
 }
-nav button:hover{transform:scale(1.15);background:#222}
+nav button:hover{
+  transform:scale(1.15);
+  background:#00ccff;
+  color:#000;
+}
 @keyframes btnPulse{
-0%{box-shadow:0 0 0px #00ccff}
-50%{box-shadow:0 0 15px #00ccff}
-100%{box-shadow:0 0 0px #00ccff}
+  0%{box-shadow:0 0 0px #00ffea;}
+  50%{box-shadow:0 0 15px #00ffea;}
+  100%{box-shadow:0 0 0px #00ffea;}
 }
 
 /* TABS */
 .tab{display:none;padding:15px;animation:tabFade 0.5s;}
-.tab.active{display:block}
+.tab.active{display:block;}
 @keyframes tabFade{
-from{opacity:0;transform:translateY(10px)}
-to{opacity:1;transform:translateY(0)}
+  0%{opacity:0;transform:translateY(10px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+
+/* STATS */
+.stats{
+  display:flex;
+  justify-content:space-around;
+  margin-bottom:10px;
+  animation:statsPulse 3s infinite alternate;
+}
+@keyframes statsPulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+  100%{transform:scale(1);}
 }
 
 /* CARDS */
+.detections{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  transition:all 0.5s;
+}
 .card{
-background:#14181f;
-border-radius:12px;
-padding:12px;
-width:260px;
-transition:.3s;
-animation:fadeIn .5s ease;
-position:relative;
+  background:#14181f;
+  border-radius:12px;
+  padding:12px;
+  width:260px;
+  transition:.3s;
+  animation:fadeIn 0.5s ease;
+  position:relative;
 }
 @keyframes fadeIn{
-0%{opacity:0;transform:translateY(20px)}
-100%{opacity:1;transform:translateY(0)}
+  0%{opacity:0;transform:translateY(20px);}
+  100%{opacity:1;transform:translateY(0);}
 }
 .card:hover{
-transform:scale(1.08);
-box-shadow:0 0 25px #00ccff, 0 0 50px #00ffea;
+  transform:scale(1.08);
+  box-shadow:0 0 25px #00ffea,0 0 50px #00ccff;
 }
-
 .insane{
-animation:insaneFlash 0.3s infinite alternate;
+  animation:insaneFlash 0.4s infinite alternate;
 }
 @keyframes insaneFlash{
-0%{box-shadow:0 0 20px red}
-50%{box-shadow:0 0 40px yellow}
-100%{box-shadow:0 0 20px red}
+  0%{box-shadow:0 0 20px red;}
+  50%{box-shadow:0 0 40px yellow;}
+  100%{box-shadow:0 0 20px red;}
 }
 
 /* BUTTONS */
 .join-btn,.copy-btn{
-display:block;margin-top:8px;padding:8px;border-radius:6px;text-align:center;
+  display:block;
+  margin-top:8px;
+  padding:8px;
+  border-radius:6px;
+  text-align:center;
+  transition:0.3s;
+  font-weight:bold;
 }
-.join-btn{background:#1f2933;color:#fff;text-decoration:none;transition:0.3s}
-.join-btn:hover{transform:scale(1.1);background:#00ccff;color:#000}
-.copy-btn{background:#333;color:#ccc;cursor:pointer;transition:0.3s}
-.copy-btn:hover{transform:scale(1.1);background:#00ffea;color:#000}
+.join-btn{
+  background:#1f2933;
+  color:#fff;
+  text-decoration:none;
+}
+.join-btn:hover{
+  background:#00ffea;
+  color:#000;
+  transform:scale(1.1);
+}
+.copy-btn{
+  background:#333;
+  color:#ccc;
+  cursor:pointer;
+}
+.copy-btn:hover{
+  background:#00ffea;
+  color:#000;
+  transform:scale(1.1);
+}
 
-/* LISTS */
+/* LEADERBOARD */
+.leaderboards{display:flex;gap:15px;margin-top:10px;}
 .leaderboard{
-background:#14181f;
-padding:10px;
-border-radius:10px;
-animation:fadeIn 1s ease, leaderGlow 2s infinite alternate;
+  background:#14181f;
+  padding:10px;
+  border-radius:12px;
+  animation:fadeIn 1s ease, leaderGlow 2s infinite alternate;
 }
 @keyframes leaderGlow{
-0%{box-shadow:0 0 5px #00ccff}
-50%{box-shadow:0 0 20px #00ffea}
-100%{box-shadow:0 0 5px #00ccff}
-}
-
-/* LAYOUT */
-.detections{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;transition:all 0.5s}
-.leaderboards{display:flex;gap:15px}
-.stats{display:flex;justify-content:space-around;animation:statsPulse 3s infinite alternate;}
-@keyframes statsPulse{
-0%{transform:scale(1)}
-50%{transform:scale(1.05)}
-100%{transform:scale(1)}
+  0%{box-shadow:0 0 5px #00ffea;}
+  50%{box-shadow:0 0 20px #00ffea;}
+  100%{box-shadow:0 0 5px #00ffea;}
 }
 
 /* POPUP */
 #popup{
-position:fixed;
-top:20%;
-left:50%;
-transform:translateX(-50%);
-padding:20px;
-background:red;
-color:white;
-font-size:30px;
-display:none;
-border-radius:12px;
-animation:pop 0.5s ease, popupGlow 1s infinite alternate;
+  position:fixed;
+  top:15%;
+  left:50%;
+  transform:translateX(-50%);
+  padding:20px;
+  background:red;
+  color:white;
+  font-size:30px;
+  display:none;
+  border-radius:12px;
+  animation:pop 0.5s ease, popupGlow 1s infinite alternate;
 }
 @keyframes pop{
-from{transform:translate(-50%,-100px);opacity:0}
-to{transform:translate(-50%,0);opacity:1}
+  0%{transform:translate(-50%,-100px);opacity:0}
+  100%{transform:translate(-50%,0);opacity:1}
 }
 @keyframes popupGlow{
-0%{text-shadow:0 0 10px yellow}
-50%{text-shadow:0 0 25px orange}
-100%{text-shadow:0 0 10px yellow}
+  0%{text-shadow:0 0 10px yellow}
+  50%{text-shadow:0 0 25px orange}
+  100%{text-shadow:0 0 10px yellow}
 }
 </style>
 </head>
 
 <body>
-
-<canvas id="rain"></canvas>
 <div id="popup">🔥 INSANEEE 100M+ DETECTED 🔥</div>
 
 <div id="app" style="display:none">
-
 <header>🤡 Scanner X</header>
-
 <nav>
-<button onclick="tab('dash')">Dashboard</button>
-<button id="prioBtn" onclick="tab('prio')" style="display:none">Priority</button>
-<button onclick="tab('leader')">Leaderboard</button>
+  <button onclick="tab('dash')">Dashboard</button>
+  <button id="prioBtn" onclick="tab('prio')" style="display:none">Priority</button>
+  <button onclick="tab('leader')">Leaderboard</button>
 </nav>
 
+<!-- NORMAL DASHBOARD -->
 <div id="dash" class="tab active">
-<div class="stats">
-<div id="total">0</div>
-<div id="best">None</div>
-</div>
-<div id="new" class="detections"></div>
-<div id="old" class="detections"></div>
+  <div class="stats">
+    <div id="total">Brainrots Detected: 0</div>
+    <div id="best">Best: None</div>
+  </div>
+  <div id="new" class="detections"></div>
+  <div id="old" class="detections"></div>
 </div>
 
+<!-- PRIORITY DASHBOARD -->
 <div id="prio" class="tab">
-<div class="stats">
-<div id="ptotal">0</div>
-<div id="pbest">None</div>
-</div>
-<div id="pnew" class="detections"></div>
-<div id="pold" class="detections"></div>
+  <div class="stats">
+    <div id="ptotal">Brainrots Detected: 0</div>
+    <div id="pbest">Best: None</div>
+  </div>
+  <div id="pnew" class="detections"></div>
+  <div id="pold" class="detections"></div>
 </div>
 
+<!-- LEADERBOARD -->
 <div id="leader" class="tab">
-<div class="leaderboards">
-<div class="leaderboard"><h3>Global</h3><ol id="global"></ol></div>
-<div class="leaderboard"><h3>Priority</h3><ol id="prioList"></ol></div>
-<div class="leaderboard"><h3>Top</h3><ol id="top"></ol></div>
+  <div class="leaderboards">
+    <div class="leaderboard"><h3>Global</h3><ol id="global"></ol></div>
+    <div class="leaderboard"><h3>Priority</h3><ol id="prioList"></ol></div>
+    <div class="leaderboard"><h3>Top</h3><ol id="top"></ol></div>
+  </div>
 </div>
-</div>
-
 </div>
 
 <script>
@@ -258,67 +296,69 @@ async function load(){
   let json=await res.json();
   let data=json.detections;
 
-  // Normal
   const newC=document.getElementById("new");
   const oldC=document.getElementById("old");
   const totalEl=document.getElementById("total");
   const bestEl=document.getElementById("best");
-  // Priority
+
   const pnewC=document.getElementById("pnew");
   const poldC=document.getElementById("pold");
   const ptotalEl=document.getElementById("ptotal");
   const pbestEl=document.getElementById("pbest");
-  // Leaderboards
+
   const globalEl=document.getElementById("global");
   const prioListEl=document.getElementById("prioList");
   const topEl=document.getElementById("top");
   const popup=document.getElementById("popup");
 
-  // Clear
   newC.innerHTML=""; oldC.innerHTML="";
   pnewC.innerHTML=""; poldC.innerHTML="";
   globalEl.innerHTML=""; prioListEl.innerHTML=""; topEl.innerHTML="";
 
-  // Stats
-  totalEl.innerText=data.filter(d=>d.gen>=50000 && d.gen<=2500000).length;
-  ptotalEl.innerText=data.filter(d=>d.gen>=1000000).length;
-  bestEl.innerText=data.find(d=>d.gen>=1000000)?data.find(d=>d.gen>=1000000).name+" "+format(data.find(d=>d.gen>=1000000).gen):"None";
-  pbestEl.innerText=data.find(d=>d.gen>=100000000)?data.find(d=>d.gen>=100000000).name+" "+format(data.find(d=>d.gen>=100000000).gen):"None";
+  // Normal stats
+  const normalData = data.filter(d=>d.gen>=50000 && d.gen<=2500000);
+  totalEl.innerText="Brainrots Detected: "+normalData.length;
+  bestEl.innerText=normalData.find(d=>d.gen>=1000000)?`Best: ${normalData.find(d=>d.gen>=1000000).name} ${format(normalData.find(d=>d.gen>=1000000).gen)}`:"Best: None";
+
+  // Priority stats
+  const prioData = data.filter(d=>d.gen>=1000000);
+  ptotalEl.innerText="Brainrots Detected: "+prioData.length;
+  pbestEl.innerText=prioData.find(d=>d.gen>=100000000)?`Best: ${prioData.find(d=>d.gen>=100000000).name} ${format(prioData.find(d=>d.gen>=100000000).gen)}`:"Best: None";
 
   // Leaderboards
   let sorted=data.slice().sort((a,b)=>b.gen-a.gen);
-  sorted.slice(0,50).forEach(d=>{globalEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`});
-  sorted.filter(d=>d.gen>=1000000).forEach(d=>{prioListEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`});
-  sorted.slice(0,10).forEach(d=>{topEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`});
+  sorted.slice(0,50).forEach(d=>globalEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`);
+  sorted.filter(d=>d.gen>=1000000).forEach(d=>prioListEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`);
+  sorted.slice(0,10).forEach(d=>topEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`);
 
   // Cards
-  data.forEach(d=>{
+  function createCard(d){
     let expired=(Date.now()-d.timestamp)/1000>60;
     let isPrio=d.gen>=1000000;
     let insane=d.gen>=100000000;
-    if(insane){popup.style.display="block";setTimeout(()=>popup.style.display="none",2000);}
+    if(insane){popup.style.display="block"; setTimeout(()=>popup.style.display="none",2000);}
 
     let card=`<div class="card ${insane?"insane":""}">
-    <h2>${d.name}</h2>
-    <p>${format(d.gen)}</p>
-    <p>${rarity(d.gen)}</p>
-    ${!expired?`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a><button class="copy-btn" onclick="copy('${d.jobId}')">Copy</button>`:`<p style="color:red">Owner Left</p>`}
+      <h2>${d.name}</h2>
+      <p>${format(d.gen)}</p>
+      <p>${rarity(d.gen)}</p>
+      ${!expired?`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a><button class="copy-btn" onclick="copy('${d.jobId}')">Copy Job ID</button>`:`<p style="color:red">Owner Left</p>`}
     </div>`;
+    return {card, expired};
+  }
 
-    if(isPrio){expired?poldC.innerHTML+=card:pnewC.innerHTML+=card;}
-    else if(d.gen>=50000 && d.gen<=2500000){expired?oldC.innerHTML+=card:newC.innerHTML+=card;}
+  normalData.forEach(d=>{
+    let {card, expired}=createCard(d);
+    if(expired) oldC.innerHTML+=card;
+    else newC.innerHTML+=card;
+  });
+
+  prioData.forEach(d=>{
+    let {card, expired}=createCard(d);
+    if(expired) poldC.innerHTML+=card;
+    else pnewC.innerHTML+=card;
   });
 }
-
-// Rain animation
-const c=document.getElementById("rain").getContext("2d");
-rain.width=innerWidth; rain.height=innerHeight;
-let drops=Array.from({length:300},()=>({x:Math.random()*rain.width,y:Math.random()*rain.height}));
-setInterval(()=>{
-  c.clearRect(0,0,rain.width,rain.height);
-  c.fillStyle="rgba(0,200,255,0.2)";
-  drops.forEach(d=>{c.fillRect(d.x,d.y,2,10); d.y+=5; if(d.y>rain.height)d.y=0;});
-},30);
 </script>
 </body>
 </html>
