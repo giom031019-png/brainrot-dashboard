@@ -2,390 +2,226 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>🤡 Scanner X</title>
+<title>🤡 Roba un Payaso Scanner Dashboard</title>
 
 <style>
-body{
-  margin:0;
-  font-family:'Segoe UI';
-  background:#0a0c10;
-  color:#e0e0e0;
-  overflow-x:hidden;
-  animation:bgPulse 8s infinite alternate;
-}
-@keyframes bgPulse{
-  0%{background:#0a0c10}
-  50%{background:#05070a}
-  100%{background:#0a0c10}
-}
+body{margin:0;font-family:'Segoe UI',sans-serif;background:#0b0f14;color:#e0e0e0;overflow-x:hidden}
+canvas{position:fixed;top:0;left:0;z-index:-1}
 
-/* LOGIN */
-#login{
-  position:fixed;
-  top:40%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  animation:fadeIn 1s;
-}
-input{
-  padding:10px;
-  border-radius:6px;
-  border:none;
-}
-button{
-  padding:10px;
-  border:none;
-  border-radius:6px;
-  background:#00ccff;
-  cursor:pointer;
-  transition:.3s;
-}
-button:hover{
-  transform:scale(1.1);
-  background:#00ffea;
-}
+header{text-align:center;padding:20px;font-size:34px;color:#fff;text-shadow:0 0 15px #00ccff}
 
-/* HEADER */
-header{
-  text-align:center;
-  padding:20px;
-  font-size:40px;
-  animation:glowHeader 2s infinite alternate, floatHeader 4s infinite alternate;
-}
-@keyframes glowHeader{
-  0%{text-shadow:0 0 10px #00ffea;}
-  50%{text-shadow:0 0 30px #00ccff;}
-  100%{text-shadow:0 0 10px #00ffea;}
-}
-@keyframes floatHeader{
-  0%{transform: translateY(0px)}
-  50%{transform: translateY(-10px)}
-  100%{transform: translateY(0px)}
-}
+nav{display:flex;justify-content:center;padding:10px}
+nav button{margin:0 8px;padding:10px 18px;background:#161b22;border-radius:8px;color:#ccc;cursor:pointer}
+nav button:hover{background:#222}
 
-/* NAV */
-nav{
-  display:flex;
-  justify-content:center;
-  margin-bottom:10px;
-  animation:navPulse 3s infinite alternate;
-}
-@keyframes navPulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.03)}
-  100%{transform:scale(1)}
-}
-nav button{
-  margin:5px;
-  padding:10px 18px;
-  background:#11161f;
-  border-radius:8px;
-  color:#ccc;
-}
-nav button:hover{
-  transform:scale(1.15);
-  background:#00ccff;
-  color:#000;
-}
+.tab{display:none;padding:15px}
+.tab.active{display:block}
 
-/* TABS */
-.tab{display:none;padding:15px;animation:fadeIn 0.5s;}
-.tab.active{display:block;}
-@keyframes fadeIn{
-  0%{opacity:0;transform:translateY(10px);}
-  100%{opacity:1;transform:translateY(0);}
-}
+.stats{display:flex;justify-content:space-around}
 
-/* STATS */
-.stats{
-  display:flex;
-  justify-content:space-around;
-  margin-bottom:10px;
-}
+.detections{display:flex;flex-wrap:wrap;gap:15px;justify-content:center}
 
-/* CARDS */
-.detections{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  justify-content:center;
-}
-.card{
-  background:#14181f;
-  border-radius:12px;
-  padding:12px;
-  width:260px;
-  transition:.3s;
-  animation:fadeIn 0.5s ease;
-}
-.card:hover{
-  transform:scale(1.08);
-  box-shadow:0 0 25px #00ffea,0 0 50px #00ccff;
-}
+.card{background:#14181f;border-radius:12px;padding:12px;width:260px}
 
-/* INSANE */
-.insane{
-  animation:insanePulse 0.5s infinite alternate, insaneShake 0.4s infinite;
+.join-btn,.copy-btn{
+display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 }
-@keyframes insanePulse{
-  0%{box-shadow:0 0 20px red;}
-  100%{box-shadow:0 0 50px yellow;}
-}
-@keyframes insaneShake{
-  0%{transform:translateX(-3px);}
-  100%{transform:translateX(3px);}
-}
+.join-btn{background:#1f2933;color:#fff;text-decoration:none}
+.copy-btn{background:#333;color:#ccc;cursor:pointer}
 
-/* LEADERBOARD */
-.leaderboards{
-  display:flex;
-  justify-content:center;
-}
-.leaderboard{
-  background:#14181f;
-  padding:10px;
-  border-radius:12px;
-  animation:leaderGlow 2s infinite alternate;
-}
-@keyframes leaderGlow{
-  0%{box-shadow:0 0 5px #00ffea;}
-  50%{box-shadow:0 0 20px #00ffea;}
-  100%{box-shadow:0 0 5px #00ffea;}
-}
-.leaderboard li{
-  padding:5px;
-  margin:3px 0;
-  background:#11161f;
-  border-radius:6px;
-  transition:.3s;
-}
-.leaderboard li:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 10px #00ffea;
-}
-.top1{animation:rainbow 2s infinite;font-weight:bold;}
-.top2{color:silver;font-weight:bold;}
-.top3{color:#cd7f32;font-weight:bold;}
-@keyframes rainbow{
-  0%{color:red;}
-  25%{color:orange;}
-  50%{color:yellow;}
-  75%{color:green;}
-  100%{color:red;}
-}
+.priority{color:#ffd966}
+.rarity{color:#8fd3ff}
 
-/* POPUP */
-#popup{
-  position:fixed;
-  top:20%;
-  left:50%;
-  transform:translateX(-50%);
-  padding:20px;
-  background:red;
-  color:white;
-  font-size:28px;
-  display:none;
-  border-radius:12px;
-  animation:pop 0.5s ease;
-}
-@keyframes pop{
-  0%{transform:translate(-50%,-100px);opacity:0}
-  100%{transform:translate(-50%,0);opacity:1}
-}
+.leaderboards{display:flex;gap:20px}
+.leaderboard{flex:1;background:#14181f;padding:10px;border-radius:10px}
+
+#dashboard-wrapper{display:none}
 </style>
 </head>
 
 <body>
 
-<div id="popup">🔥 INSANEEE 100M+ DETECTED 🔥</div>
+<canvas id="rain"></canvas>
 
-<!-- LOGIN -->
-<div id="login">
-  <h2>Enter Key</h2>
-  <input id="keyInput">
-  <br><br>
-  <button onclick="login()">Enter</button>
-</div>
+<div id="dashboard-wrapper">
 
-<div id="app" style="display:none">
-
-<header>🤡 Scanner X</header>
+<header>🤡 Roba un Payaso Scanner Dashboard</header>
 
 <nav>
-  <button onclick="tab('dash')">Dashboard</button>
-  <button id="prioBtn" onclick="tab('prio')">Priority</button>
-  <button onclick="tab('leader')">Leaderboard</button>
+<button onclick="showTab('dashboard')">Dashboard</button>
+<button onclick="showTab('priority')">Top Priority</button>
+<button onclick="showTab('leaderboard')">Leaderboard</button>
+<button onclick="showTab('helpers')">Helpers</button>
 </nav>
 
-<!-- DASH -->
-<div id="dash" class="tab active">
-  <div class="stats">
-    <div id="total">Total: 0</div>
-    <div id="best">Best: None</div>
-  </div>
-  <div id="new" class="detections"></div>
-  <h3 style="text-align:center;">Old</h3>
-  <div id="old" class="detections"></div>
+<div id="dashboard" class="tab active">
+<div class="stats">
+<div><div id="total">0</div><div>Total</div></div>
+<div><div id="best">None</div><div>Best</div></div>
 </div>
 
-<!-- PRIO -->
-<div id="prio" class="tab">
-  <div class="stats">
-    <div id="ptotal">Total: 0</div>
-    <div id="pbest">Best: None</div>
-  </div>
-  <div id="pnew" class="detections"></div>
-  <h3 style="text-align:center;">Old</h3>
-  <div id="pold" class="detections"></div>
+<h2>New</h2>
+<div id="new-detections" class="detections"></div>
+
+<h2>Old</h2>
+<div id="old-detections" class="detections"></div>
 </div>
 
-<!-- LEADERBOARD -->
-<div id="leader" class="tab">
-  <div class="leaderboards">
-    <div class="leaderboard">
-      <h3>🏆 Top Finds</h3>
-      <ol id="leaderboard"></ol>
-    </div>
-  </div>
+<div id="priority" class="tab">
+<h2>Top Priority</h2>
+<h3>New</h3>
+<div id="priority-new" class="detections"></div>
+<h3>Old</h3>
+<div id="priority-old" class="detections"></div>
 </div>
+
+<div id="leaderboard" class="tab">
+<div class="leaderboards">
+<div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
+<div class="leaderboard"><h3>Priority</h3><ol id="prio-finds"></ol></div>
+<div class="leaderboard"><h3>Best</h3><ol id="top-brainrots"></ol></div>
+</div>
+</div>
+
+<div id="helpers" class="tab"><center>gioyuhh • maico</center></div>
 
 </div>
 
 <script>
-const API="https://YOUR-RENDER-URL.onrender.com/detections"
+window.onload=()=>{
+const pw=prompt("Enter password:");
+if(pw==="macielissocute"){
+document.getElementById("dashboard-wrapper").style.display="block";
+loadData();
+setInterval(loadData,3000);
+}else{
+document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
+}
+};
 
-let oldN=[], oldP=[], seen=[]
-let role="normal"
-
-function tab(id){
-  if(id==="prio" && role!=="prio"){
-    alert("No access to Priority")
-    return
-  }
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
-  document.getElementById(id).classList.add('active')
+function showTab(id){
+if(id==="priority"){
+const pass=prompt("Enter Top Priority password:");
+if(pass!=="11prio")return;
+}
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
-function popup(){
-  const p=document.getElementById("popup")
-  p.style.display="block"
-  setTimeout(()=>p.style.display="none",2000)
+function formatGen(g){
+return g>=1e6?(g/1e6).toFixed(1)+"m":
+g>=1e3?(g/1e3).toFixed(1)+"k":g;
 }
 
-function login(){
-  const key=document.getElementById("keyInput").value
-
-  if(key==="macielissocute"){
-    role="normal"
-    document.getElementById("prioBtn").style.display="none"
-    document.getElementById("login").style.display="none"
-    document.getElementById("app").style.display="block"
-    tab('dash')
-  }
-  else if(key==="prio112233"){
-    role="prio"
-    document.getElementById("prioBtn").style.display="inline-block"
-    document.getElementById("login").style.display="none"
-    document.getElementById("app").style.display="block"
-    tab('prio')
-  }
-  else alert("Wrong key")
+function rarityLabel(g){
+if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
+if(g>=1e5)return"<span class='rarity'>Legendary</span>";
+if(g>=25000)return"<span class='rarity'>Rare</span>";
+return"<span class='rarity'>Common</span>";
 }
 
-function makeCard(d,isPrio){
-  const div=document.createElement("div")
-  div.className="card"
-
-  if(d.gen>=100000000){
-    div.classList.add("insane")
-    popup()
-  }
-
-  div.innerHTML=`
-    <b>${d.name}</b><br>
-    ${d.gen}<br>
-    ${d.traits}<br>
-    ${d.mutation}<br>
-    Owner: ${d.owner}<br>
-    <div onclick="navigator.clipboard.writeText('${d.jobId}')">📋 Copy JobId</div>
-  `
-
-  setTimeout(()=>{
-    div.remove()
-    if(isPrio){ oldP.unshift(d); renderOldP() }
-    else{ oldN.unshift(d); renderOldN() }
-  },60000)
-
-  return div
+function copyJob(id){
+navigator.clipboard.writeText(id);
 }
 
-function renderOldN(){
-  const el=document.getElementById("old")
-  el.innerHTML=""
-  oldN.slice(0,50).forEach(d=>el.appendChild(makeStatic(d)))
+async function loadData(){
+try{
+const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
+const data=await res.json();
+
+document.getElementById('total').innerText=data.total||0;
+document.getElementById('best').innerText=data.bestFind?
+data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
+
+const newC=document.getElementById('new-detections');
+const oldC=document.getElementById('old-detections');
+const pNew=document.getElementById('priority-new');
+const pOld=document.getElementById('priority-old');
+
+newC.innerHTML="";
+oldC.innerHTML="";
+pNew.innerHTML="";
+pOld.innerHTML="";
+
+data.detections.forEach(d=>{
+if(d.gen<25000)return;
+
+const expired=(Date.now()-d.timestamp)/1000>60;
+
+const card=document.createElement('div');
+card.className='card';
+
+card.innerHTML=`
+<h2>${d.name}</h2>
+<p>Gen: ${formatGen(d.gen)}</p>
+<p>${rarityLabel(d.gen)}</p>
+<p>Owner: ${d.owner||"Unknown"}</p>
+${expired?`<p style="color:red;">Owner left</p>`:
+`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
+<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
+`;
+
+if(d.gen>=500000){
+expired?pOld.appendChild(card):pNew.appendChild(card);
+}else{
+expired?oldC.appendChild(card):newC.appendChild(card);
+}
+});
+
+// leaderboards
+const g=document.getElementById('global-finds');
+const p=document.getElementById('prio-finds');
+const t=document.getElementById('top-brainrots');
+
+g.innerHTML="";
+p.innerHTML="";
+t.innerHTML="";
+
+data.detections.slice(0,50).forEach(d=>{
+g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`;
+});
+
+data.detections.filter(d=>d.gen>=500000)
+.sort((a,b)=>b.gen-a.gen)
+.slice(0,50)
+.forEach(d=>{
+p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
+});
+
+data.detections.sort((a,b)=>b.gen-a.gen)
+.slice(0,10)
+.forEach(d=>{
+t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
+});
+
+}catch(e){console.log(e);}
 }
 
-function renderOldP(){
-  const el=document.getElementById("pold")
-  el.innerHTML=""
-  oldP.slice(0,50).forEach(d=>el.appendChild(makeStatic(d)))
+// rain
+const canvas=document.getElementById("rain");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let drops=[];
+for(let i=0;i<200;i++){
+drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});
 }
 
-function makeStatic(d){
-  const div=document.createElement("div")
-  div.className="card"
-  div.innerHTML=`
-    <b>${d.name}</b><br>
-    ${d.gen}<br>
-    Owner: ${d.owner}<br>
-    <div onclick="navigator.clipboard.writeText('${d.jobId}')">📋 Copy</div>
-  `
-  return div
+function rain(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="rgba(150,150,255,0.2)";
+drops.forEach(d=>{
+ctx.fillRect(d.x,d.y,2,10);
+d.y+=d.s;
+if(d.y>canvas.height){
+d.y=0;
+d.x=Math.random()*canvas.width;
+}
+});
 }
 
-async function fetchData(){
-  try{
-    const res=await fetch(API)
-    const data=await res.json()
-
-    document.getElementById("total").innerText="Total: "+data.total
-    document.getElementById("best").innerText=data.bestFind ? "Best: "+data.bestFind.name+" ("+data.bestFind.gen+")":"Best: None"
-    document.getElementById("ptotal").innerText="Total: "+data.total
-    document.getElementById("pbest").innerText=data.bestFind ? "Best: "+data.bestFind.name+" ("+data.bestFind.gen+")":"Best: None"
-
-    data.detections.slice(-10).forEach(d=>{
-      if(seen.includes(d.timestamp)) return
-      seen.push(d.timestamp)
-
-      if(d.gen>=2500000){
-        document.getElementById("pnew").prepend(makeCard(d,true))
-      }else if(d.gen>=50000){
-        document.getElementById("new").prepend(makeCard(d,false))
-      }
-    })
-
-    updateLeaderboard(data.detections)
-
-  }catch(e){}
-}
-
-function updateLeaderboard(list){
-  const sorted=[...list].sort((a,b)=>b.gen-a.gen).slice(0,10)
-  const lb=document.getElementById("leaderboard")
-  lb.innerHTML=""
-
-  sorted.forEach((d,i)=>{
-    const li=document.createElement("li")
-    li.innerText=`${d.name} (${d.gen})`
-    if(i==0) li.classList.add("top1")
-    if(i==1) li.classList.add("top2")
-    if(i==2) li.classList.add("top3")
-    lb.appendChild(li)
-  })
-}
-
-setInterval(fetchData,2000)
+setInterval(rain,30);
 </script>
 
 </body>
