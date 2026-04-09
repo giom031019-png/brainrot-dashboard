@@ -2,271 +2,226 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>🤡 Scanner X</title>
+<title>🤡 Roba un Payaso Scanner Dashboard</title>
 
 <style>
-body{
-  margin:0;
-  font-family:'Segoe UI';
-  background:linear-gradient(135deg,#05070a,#0a0c10,#020305);
-  color:#e0e0e0;
-  overflow-x:hidden;
-}
+body{margin:0;font-family:'Segoe UI',sans-serif;background:#0b0f14;color:#e0e0e0;overflow-x:hidden}
+canvas{position:fixed;top:0;left:0;z-index:-1}
 
-/* LOGIN */
-#login{
-  position:fixed;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-}
-#login input{
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  margin-top:10px;
-}
-#login button{
-  padding:10px;
-  border-radius:10px;
-  margin-top:10px;
-  background:#00ccff;
-  border:none;
-  cursor:pointer;
-}
+header{text-align:center;padding:20px;font-size:34px;color:#fff;text-shadow:0 0 15px #00ccff}
 
-/* APP */
-#app{display:none;}
+nav{display:flex;justify-content:center;padding:10px}
+nav button{margin:0 8px;padding:10px 18px;background:#161b22;border-radius:8px;color:#ccc;cursor:pointer}
+nav button:hover{background:#222}
 
-header{
-  text-align:center;
-  font-size:38px;
-  padding:15px;
-  animation:glow 2s infinite alternate;
-}
-@keyframes glow{
-  0%{text-shadow:0 0 10px cyan;}
-  100%{text-shadow:0 0 30px cyan;}
-}
+.tab{display:none;padding:15px}
+.tab.active{display:block}
 
-nav{text-align:center;}
-nav button{
-  padding:10px;
-  margin:5px;
-  border-radius:8px;
-  background:#111;
-  color:white;
-  cursor:pointer;
-}
+.stats{display:flex;justify-content:space-around}
 
-.tab{display:none;}
-.tab.active{display:block;}
+.detections{display:flex;flex-wrap:wrap;gap:15px;justify-content:center}
 
-.stats{
-  display:flex;
-  justify-content:space-around;
-  margin:10px;
-}
+.card{background:#14181f;border-radius:12px;padding:12px;width:260px}
 
-.detections{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  justify-content:center;
+.join-btn,.copy-btn{
+display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
 }
+.join-btn{background:#1f2933;color:#fff;text-decoration:none}
+.copy-btn{background:#333;color:#ccc;cursor:pointer}
 
-.card{
-  background:#14181f;
-  padding:10px;
-  border-radius:10px;
-  width:250px;
-  animation:fadeIn .5s;
-}
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(20px);}
-  to{opacity:1;}
-}
+.priority{color:#ffd966}
+.rarity{color:#8fd3ff}
 
-.insane{
-  animation:insane 0.4s infinite alternate;
-}
-@keyframes insane{
-  from{box-shadow:0 0 20px red;}
-  to{box-shadow:0 0 50px yellow;}
-}
+.leaderboards{display:flex;gap:20px}
+.leaderboard{flex:1;background:#14181f;padding:10px;border-radius:10px}
 
-button.copy{
-  margin-top:5px;
-  padding:5px;
-  width:100%;
-  cursor:pointer;
-}
-
-/* POPUP */
-#popup{
-  position:fixed;
-  top:20%;
-  left:50%;
-  transform:translateX(-50%);
-  background:red;
-  padding:20px;
-  display:none;
-  font-size:30px;
-}
+#dashboard-wrapper{display:none}
 </style>
 </head>
 
 <body>
 
-<div id="popup">🔥 INSANEEE 100M+ DETECTED 🔥</div>
+<canvas id="rain"></canvas>
 
-<!-- LOGIN -->
-<div id="login">
-  <h2>Enter Key</h2>
-  <input id="key">
-  <br>
-  <button onclick="login()">Login</button>
-  <p id="err" style="color:red"></p>
-</div>
+<div id="dashboard-wrapper">
 
-<!-- APP -->
-<div id="app">
-
-<header>🤡 Scanner X</header>
+<header>🤡 Roba un Payaso Scanner Dashboard</header>
 
 <nav>
-  <button onclick="tab('dash')">Dashboard</button>
-  <button id="prioBtn" onclick="tab('prio')" style="display:none">Priority</button>
+<button onclick="showTab('dashboard')">Dashboard</button>
+<button onclick="showTab('priority')">Top Priority</button>
+<button onclick="showTab('leaderboard')">Leaderboard</button>
+<button onclick="showTab('helpers')">Helpers</button>
 </nav>
 
-<div id="dash" class="tab active">
-  <div class="stats">
-    <div id="count">0 detections</div>
-    <div id="best">Best: none</div>
-  </div>
-  <h3>New</h3>
-  <div id="new" class="detections"></div>
-  <h3>Old</h3>
-  <div id="old" class="detections"></div>
+<div id="dashboard" class="tab active">
+<div class="stats">
+<div><div id="total">0</div><div>Total</div></div>
+<div><div id="best">None</div><div>Best</div></div>
 </div>
 
-<div id="prio" class="tab">
-  <div class="stats">
-    <div id="pcount">0 detections</div>
-    <div id="pbest">Best: none</div>
-  </div>
-  <h3>New</h3>
-  <div id="pnew" class="detections"></div>
-  <h3>Old</h3>
-  <div id="pold" class="detections"></div>
+<h2>New</h2>
+<div id="new-detections" class="detections"></div>
+
+<h2>Old</h2>
+<div id="old-detections" class="detections"></div>
 </div>
+
+<div id="priority" class="tab">
+<h2>Top Priority</h2>
+<h3>New</h3>
+<div id="priority-new" class="detections"></div>
+<h3>Old</h3>
+<div id="priority-old" class="detections"></div>
+</div>
+
+<div id="leaderboard" class="tab">
+<div class="leaderboards">
+<div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
+<div class="leaderboard"><h3>Priority</h3><ol id="prio-finds"></ol></div>
+<div class="leaderboard"><h3>Best</h3><ol id="top-brainrots"></ol></div>
+</div>
+</div>
+
+<div id="helpers" class="tab"><center>gioyuhh • maico</center></div>
 
 </div>
 
 <script>
+window.onload=()=>{
+const pw=prompt("Enter password:");
+if(pw==="macielissocute"){
+document.getElementById("dashboard-wrapper").style.display="block";
+loadData();
+setInterval(loadData,3000);
+}else{
+document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
+}
+};
 
-// KEYS
-const NORMAL="macielissocute";
-const PRIO="prio112233";
-
-function login(){
-  let k=document.getElementById("key").value;
-
-  if(k===NORMAL){
-    start(false);
-  }
-  else if(k===PRIO){
-    start(true);
-  }
-  else{
-    document.getElementById("err").innerText="Invalid key";
-  }
+function showTab(id){
+if(id==="priority"){
+const pass=prompt("Enter Top Priority password:");
+if(pass!=="11prio")return;
+}
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
-function start(prio){
-  document.getElementById("login").style.display="none";
-  document.getElementById("app").style.display="block";
-  if(prio) document.getElementById("prioBtn").style.display="inline-block";
+function formatGen(g){
+return g>=1e6?(g/1e6).toFixed(1)+"m":
+g>=1e3?(g/1e3).toFixed(1)+"k":g;
 }
 
-function tab(id){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+function rarityLabel(g){
+if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
+if(g>=1e5)return"<span class='rarity'>Legendary</span>";
+if(g>=25000)return"<span class='rarity'>Rare</span>";
+return"<span class='rarity'>Common</span>";
 }
 
-// STORAGE
-let detections=[];
-let oldDetections=[];
-
-// ADD DETECTION (SIMULATES LUA DATA)
-function addDetection(data){
-
-  detections.push({...data,time:Date.now()});
-
-  render();
-
-  // MOVE TO OLD AFTER 60s
-  setTimeout(()=>{
-    oldDetections.push({...data,owner:"Owner Left"});
-    detections = detections.filter(d=>d!==data);
-    render();
-  },60000);
-
-  // INSANE POPUP
-  if(data.gen>=100000000){
-    let pop=document.getElementById("popup");
-    pop.style.display="block";
-    setTimeout(()=>pop.style.display="none",2000);
-  }
+function copyJob(id){
+navigator.clipboard.writeText(id);
 }
 
-// RENDER
-function render(){
-  let newDiv=document.getElementById("new");
-  let oldDiv=document.getElementById("old");
+async function loadData(){
+try{
+const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
+const data=await res.json();
 
-  newDiv.innerHTML="";
-  oldDiv.innerHTML="";
+document.getElementById('total').innerText=data.total||0;
+document.getElementById('best').innerText=data.bestFind?
+data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
 
-  let best=0;
+const newC=document.getElementById('new-detections');
+const oldC=document.getElementById('old-detections');
+const pNew=document.getElementById('priority-new');
+const pOld=document.getElementById('priority-old');
 
-  detections.forEach(d=>{
-    let c=document.createElement("div");
-    c.className="card"+(d.gen>=100000000?" insane":"");
-    c.innerHTML=`
-      <b>${d.name}</b><br>
-      ${d.gen}/s<br>
-      Owner: ${d.owner}<br>
-      <button class="copy" onclick="navigator.clipboard.writeText('${d.job}')">Copy JobId</button>
-    `;
-    newDiv.appendChild(c);
-    if(d.gen>best) best=d.gen;
-  });
+newC.innerHTML="";
+oldC.innerHTML="";
+pNew.innerHTML="";
+pOld.innerHTML="";
 
-  oldDetections.forEach(d=>{
-    let c=document.createElement("div");
-    c.className="card";
-    c.innerHTML=`
-      <b>${d.name}</b><br>
-      Owner Left
-    `;
-    oldDiv.appendChild(c);
-  });
+data.detections.forEach(d=>{
+if(d.gen<25000)return;
 
-  document.getElementById("count").innerText=detections.length+" detections";
-  document.getElementById("best").innerText="Best: "+best;
+const expired=(Date.now()-d.timestamp)/1000>60;
+
+const card=document.createElement('div');
+card.className='card';
+
+card.innerHTML=`
+<h2>${d.name}</h2>
+<p>Gen: ${formatGen(d.gen)}</p>
+<p>${rarityLabel(d.gen)}</p>
+<p>Owner: ${d.owner||"Unknown"}</p>
+${expired?`<p style="color:red;">Owner left</p>`:
+`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
+<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
+`;
+
+if(d.gen>=500000){
+expired?pOld.appendChild(card):pNew.appendChild(card);
+}else{
+expired?oldC.appendChild(card):newC.appendChild(card);
+}
+});
+
+// leaderboards
+const g=document.getElementById('global-finds');
+const p=document.getElementById('prio-finds');
+const t=document.getElementById('top-brainrots');
+
+g.innerHTML="";
+p.innerHTML="";
+t.innerHTML="";
+
+data.detections.slice(0,50).forEach(d=>{
+g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`;
+});
+
+data.detections.filter(d=>d.gen>=500000)
+.sort((a,b)=>b.gen-a.gen)
+.slice(0,50)
+.forEach(d=>{
+p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
+});
+
+data.detections.sort((a,b)=>b.gen-a.gen)
+.slice(0,10)
+.forEach(d=>{
+t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
+});
+
+}catch(e){console.log(e);}
 }
 
-// 🔥 SIMULATED DATA (REPLACE WITH BACKEND LATER)
-setInterval(()=>{
-  addDetection({
-    name:"Brainrot",
-    gen:Math.floor(Math.random()*150000000),
-    owner:"Player",
-    job:"JOB-"+Math.floor(Math.random()*99999)
-  });
-},4000);
+// rain
+const canvas=document.getElementById("rain");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
+let drops=[];
+for(let i=0;i<200;i++){
+drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});
+}
+
+function rain(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="rgba(150,150,255,0.2)";
+drops.forEach(d=>{
+ctx.fillRect(d.x,d.y,2,10);
+d.y+=d.s;
+if(d.y>canvas.height){
+d.y=0;
+d.x=Math.random()*canvas.width;
+}
+});
+}
+
+setInterval(rain,30);
 </script>
 
 </body>
