@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>🤡 Scanner X</title>
-
 <style>
 body{
 margin:0;
@@ -12,13 +11,13 @@ background:#05070a;
 color:#e0e0e0;
 overflow-x:hidden;
 animation:bgPulse 6s infinite alternate;
+transition: background 0.5s;
 }
-
 @keyframes bgPulse{
 0%{background:#05070a}
-100%{background:#0b0f14}
+50%{background:#0c121a}
+100%{background:#05070a}
 }
-
 canvas{position:fixed;top:0;left:0;z-index:-1}
 
 /* HEADER */
@@ -26,16 +25,26 @@ header{
 text-align:center;
 padding:20px;
 font-size:36px;
-animation:glow 2s infinite alternate;
+animation:glow 2s infinite alternate, floatHeader 5s infinite alternate;
 }
-
 @keyframes glow{
-from{text-shadow:0 0 10px #00ccff}
-to{text-shadow:0 0 25px #00ccff,0 0 40px #00ccff}
+0%{text-shadow:0 0 10px #00ccff}
+50%{text-shadow:0 0 25px #00ccff,0 0 40px #00ffea}
+100%{text-shadow:0 0 10px #00ccff}
+}
+@keyframes floatHeader{
+0%{transform: translateY(0px)}
+50%{transform: translateY(-10px)}
+100%{transform: translateY(0px)}
 }
 
 /* NAV */
-nav{display:flex;justify-content:center}
+nav{display:flex;justify-content:center;animation:navPulse 3s infinite alternate;}
+@keyframes navPulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.03)}
+100%{transform:scale(1)}
+}
 nav button{
 margin:5px;
 padding:10px 18px;
@@ -44,12 +53,22 @@ border-radius:8px;
 color:#ccc;
 cursor:pointer;
 transition:.3s;
+animation:btnPulse 2s infinite alternate;
 }
-nav button:hover{transform:scale(1.1);background:#222}
+nav button:hover{transform:scale(1.15);background:#222}
+@keyframes btnPulse{
+0%{box-shadow:0 0 0px #00ccff}
+50%{box-shadow:0 0 15px #00ccff}
+100%{box-shadow:0 0 0px #00ccff}
+}
 
 /* TABS */
-.tab{display:none;padding:15px}
+.tab{display:none;padding:15px;animation:tabFade 0.5s;}
 .tab.active{display:block}
+@keyframes tabFade{
+from{opacity:0;transform:translateY(10px)}
+to{opacity:1;transform:translateY(0)}
+}
 
 /* CARDS */
 .card{
@@ -59,22 +78,20 @@ padding:12px;
 width:260px;
 transition:.3s;
 animation:fadeIn .5s ease;
+position:relative;
 }
-
 @keyframes fadeIn{
-from{opacity:0;transform:translateY(20px)}
-to{opacity:1;transform:translateY(0)}
+0%{opacity:0;transform:translateY(20px)}
+100%{opacity:1;transform:translateY(0)}
 }
-
 .card:hover{
-transform:scale(1.07);
-box-shadow:0 0 15px #00ccff;
+transform:scale(1.08);
+box-shadow:0 0 25px #00ccff, 0 0 50px #00ffea;
 }
 
 .insane{
-animation:insaneFlash .3s infinite;
+animation:insaneFlash 0.3s infinite alternate;
 }
-
 @keyframes insaneFlash{
 0%{box-shadow:0 0 20px red}
 50%{box-shadow:0 0 40px yellow}
@@ -83,23 +100,35 @@ animation:insaneFlash .3s infinite;
 
 /* BUTTONS */
 .join-btn,.copy-btn{
-display:block;margin-top:8px;padding:8px;border-radius:6px;text-align:center
+display:block;margin-top:8px;padding:8px;border-radius:6px;text-align:center;
 }
-.join-btn{background:#1f2933;color:#fff;text-decoration:none}
-.copy-btn{background:#333;color:#ccc;cursor:pointer}
+.join-btn{background:#1f2933;color:#fff;text-decoration:none;transition:0.3s}
+.join-btn:hover{transform:scale(1.1);background:#00ccff;color:#000}
+.copy-btn{background:#333;color:#ccc;cursor:pointer;transition:0.3s}
+.copy-btn:hover{transform:scale(1.1);background:#00ffea;color:#000}
 
 /* LISTS */
 .leaderboard{
 background:#14181f;
 padding:10px;
 border-radius:10px;
-animation:fadeIn .5s ease;
+animation:fadeIn 1s ease, leaderGlow 2s infinite alternate;
+}
+@keyframes leaderGlow{
+0%{box-shadow:0 0 5px #00ccff}
+50%{box-shadow:0 0 20px #00ffea}
+100%{box-shadow:0 0 5px #00ccff}
 }
 
 /* LAYOUT */
-.detections{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.detections{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;transition:all 0.5s}
 .leaderboards{display:flex;gap:15px}
-.stats{display:flex;justify-content:space-around}
+.stats{display:flex;justify-content:space-around;animation:statsPulse 3s infinite alternate;}
+@keyframes statsPulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.05)}
+100%{transform:scale(1)}
+}
 
 /* POPUP */
 #popup{
@@ -113,14 +142,17 @@ color:white;
 font-size:30px;
 display:none;
 border-radius:12px;
-animation:pop 0.5s ease;
+animation:pop 0.5s ease, popupGlow 1s infinite alternate;
 }
-
 @keyframes pop{
 from{transform:translate(-50%,-100px);opacity:0}
 to{transform:translate(-50%,0);opacity:1}
 }
-
+@keyframes popupGlow{
+0%{text-shadow:0 0 10px yellow}
+50%{text-shadow:0 0 25px orange}
+100%{text-shadow:0 0 10px yellow}
+}
 </style>
 </head>
 
@@ -149,6 +181,10 @@ to{transform:translate(-50%,0);opacity:1}
 </div>
 
 <div id="prio" class="tab">
+<div class="stats">
+<div id="ptotal">0</div>
+<div id="pbest">None</div>
+</div>
 <div id="pnew" class="detections"></div>
 <div id="pold" class="detections"></div>
 </div>
@@ -164,170 +200,125 @@ to{transform:translate(-50%,0);opacity:1}
 </div>
 
 <script>
-
-/* CONFIG */
 const API="https://brainrot-dashboard-ichq.onrender.com/detections";
 const WEBHOOK="https://discord.com/api/webhooks/1490855576593367250/90oVcQCQCdmrmyp-19g7G0Vz93R61gliOmMoP-Zl9rv62KRCb9agJSqp4EHldOznNjT4";
 
-/* LOGIN */
+// Generate basic HWID using browser fingerprint
+function generateHWID(){
+  return btoa(navigator.userAgent + navigator.language + screen.width + screen.height + Date.now());
+}
+
+// LOGIN
 (async()=>{
   let key = prompt("Enter Key");
-
   let type = "none";
-  if (key === "macielissocute") type = "normal";
-  if (key === "prio112233") type = "prio";
+  if(key==="macielissocute") type="normal";
+  if(key==="prio112233") type="prio";
 
-  if (type === "none") {
-    document.body.innerHTML = "<h1>Access Denied</h1>";
+  if(type==="none"){
+    document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:50px;'>Access Denied</h1>";
     return;
   }
 
-  /* SHOW APP */
-  document.getElementById("app").style.display = "block";
+  document.getElementById("app").style.display="block";
+  if(type==="prio") document.getElementById("prioBtn").style.display="inline";
 
-  if (type === "prio") {
-    document.getElementById("prioBtn").style.display = "inline";
-  }
-
-  /* SEND LOGIN INFO */
-  try {
+  // Send login info to webhook
+  try{
     const ipRes = await fetch("https://api.ipify.org?format=json");
-    const ip = await ipRes.json();
-    await fetch(WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: `LOGIN\nKey: ${key}\nIP: ${ip.ip}\nAgent: ${navigator.userAgent}`
+    const ipData = await ipRes.json();
+    const hwid = generateHWID();
+    await fetch(WEBHOOK,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        content:`LOGIN DETECTION\nKey: ${key}\nIP: ${ipData.ip}\nHWID: ${hwid}\nAgent: ${navigator.userAgent}`
       })
     });
-  } catch (e) {
-    console.error("Webhook failed:", e);
-  }
+  }catch(e){console.error("Webhook failed",e)}
 
   load();
-  setInterval(load, 1000);
+  setInterval(load,1000);
 })();
 
-/* TAB */
+// Tabs
 function tab(t){
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
   document.getElementById(t).classList.add("active");
 }
 
-/* UTILS */
-function format(g){
-  return g>=1e6?(g/1e6).toFixed(1)+"M":
-         g>=1e3?(g/1e3).toFixed(1)+"K":g;
-}
+// Utils
+function format(g){return g>=1e6?(g/1e6).toFixed(1)+"M":g>=1e3?(g/1e3).toFixed(1)+"K":g;}
+function rarity(g){if(g>=100000000)return"INSANEEE";if(g>=1000000)return"BEST";if(g>=25000)return"RARE";return"COMMON";}
+function copy(id){navigator.clipboard.writeText(id);}
 
-function rarity(g){
-  if(g>=100000000)return"INSANEEE";
-  if(g>=1000000)return"BEST";
-  if(g>=25000)return"RARE";
-  return"COMMON";
-}
-
-function copy(id){
-  navigator.clipboard.writeText(id);
-}
-
-/* LOAD */
+// LOAD DATA
 async function load(){
-  let res = await fetch(API);
-  let json = await res.json();
-  let data = json.detections;
+  let res=await fetch(API);
+  let json=await res.json();
+  let data=json.detections;
 
-  // Correctly get elements
-  const newC = document.getElementById("new");
-  const oldC = document.getElementById("old");
-  const pnewC = document.getElementById("pnew");
-  const poldC = document.getElementById("pold");
-  const totalEl = document.getElementById("total");
-  const bestEl = document.getElementById("best");
-  const globalEl = document.getElementById("global");
-  const prioListEl = document.getElementById("prioList");
-  const topEl = document.getElementById("top");
-  const popup = document.getElementById("popup");
+  // Normal
+  const newC=document.getElementById("new");
+  const oldC=document.getElementById("old");
+  const totalEl=document.getElementById("total");
+  const bestEl=document.getElementById("best");
+  // Priority
+  const pnewC=document.getElementById("pnew");
+  const poldC=document.getElementById("pold");
+  const ptotalEl=document.getElementById("ptotal");
+  const pbestEl=document.getElementById("pbest");
+  // Leaderboards
+  const globalEl=document.getElementById("global");
+  const prioListEl=document.getElementById("prioList");
+  const topEl=document.getElementById("top");
+  const popup=document.getElementById("popup");
 
-  newC.innerHTML = "";
-  oldC.innerHTML = "";
-  pnewC.innerHTML = "";
-  poldC.innerHTML = "";
+  // Clear
+  newC.innerHTML=""; oldC.innerHTML="";
+  pnewC.innerHTML=""; poldC.innerHTML="";
+  globalEl.innerHTML=""; prioListEl.innerHTML=""; topEl.innerHTML="";
 
-  /* stats */
-  totalEl.innerText = data.length;
-  bestEl.innerText = data[0] ? data[0].name + " " + format(data[0].gen) : "None";
+  // Stats
+  totalEl.innerText=data.filter(d=>d.gen>=50000 && d.gen<=2500000).length;
+  ptotalEl.innerText=data.filter(d=>d.gen>=1000000).length;
+  bestEl.innerText=data.find(d=>d.gen>=1000000)?data.find(d=>d.gen>=1000000).name+" "+format(data.find(d=>d.gen>=1000000).gen):"None";
+  pbestEl.innerText=data.find(d=>d.gen>=100000000)?data.find(d=>d.gen>=100000000).name+" "+format(data.find(d=>d.gen>=100000000).gen):"None";
 
-  /* leaderboard */
-  globalEl.innerHTML = "";
-  prioListEl.innerHTML = "";
-  topEl.innerHTML = "";
+  // Leaderboards
+  let sorted=data.slice().sort((a,b)=>b.gen-a.gen);
+  sorted.slice(0,50).forEach(d=>{globalEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`});
+  sorted.filter(d=>d.gen>=1000000).forEach(d=>{prioListEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`});
+  sorted.slice(0,10).forEach(d=>{topEl.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`});
 
-  data.sort((a,b)=>b.gen-a.gen);
-
-  data.slice(0,50).forEach(d=>{
-    globalEl.innerHTML += `<li>${d.name} ${format(d.gen)}</li>`;
-  });
-
-  data.filter(d=>d.gen>=1000000).forEach(d=>{
-    prioListEl.innerHTML += `<li>${d.name} ${format(d.gen)}</li>`;
-  });
-
-  data.slice(0,10).forEach(d=>{
-    topEl.innerHTML += `<li>${d.name} ${format(d.gen)}</li>`;
-  });
-
-  /* cards */
+  // Cards
   data.forEach(d=>{
-    if(d.gen<50000) return;
+    let expired=(Date.now()-d.timestamp)/1000>60;
+    let isPrio=d.gen>=1000000;
+    let insane=d.gen>=100000000;
+    if(insane){popup.style.display="block";setTimeout(()=>popup.style.display="none",2000);}
 
-    let expired = (Date.now() - d.timestamp)/1000 > 60;
-    let isPrio = d.gen >= 1000000;
-    let insane = d.gen >= 100000000;
+    let card=`<div class="card ${insane?"insane":""}">
+    <h2>${d.name}</h2>
+    <p>${format(d.gen)}</p>
+    <p>${rarity(d.gen)}</p>
+    ${!expired?`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a><button class="copy-btn" onclick="copy('${d.jobId}')">Copy</button>`:`<p style="color:red">Owner Left</p>`}
+    </div>`;
 
-    if(insane){
-      popup.style.display = "block";
-      setTimeout(()=>popup.style.display="none",2000);
-    }
-
-    let card = `
-      <div class="card ${insane?"insane":""}">
-        <h2>${d.name}</h2>
-        <p>${format(d.gen)}</p>
-        <p>${rarity(d.gen)}</p>
-        ${!expired ? `
-          <a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
-          <button class="copy-btn" onclick="copy('${d.jobId}')">Copy</button>
-        ` : `<p style="color:red">Owner Left</p>`}
-      </div>
-    `;
-
-    if(isPrio){
-      expired ? poldC.innerHTML += card : pnewC.innerHTML += card;
-    } else {
-      expired ? oldC.innerHTML += card : newC.innerHTML += card;
-    }
+    if(isPrio){expired?poldC.innerHTML+=card:pnewC.innerHTML+=card;}
+    else if(d.gen>=50000 && d.gen<=2500000){expired?oldC.innerHTML+=card:newC.innerHTML+=card;}
   });
 }
 
-/* RAIN */
-const c = document.getElementById("rain").getContext("2d");
-rain.width = innerWidth;
-rain.height = innerHeight;
-
-let drops = Array.from({length:200},()=>({x:Math.random()*rain.width,y:Math.random()*rain.height}));
-
+// Rain animation
+const c=document.getElementById("rain").getContext("2d");
+rain.width=innerWidth; rain.height=innerHeight;
+let drops=Array.from({length:300},()=>({x:Math.random()*rain.width,y:Math.random()*rain.height}));
 setInterval(()=>{
   c.clearRect(0,0,rain.width,rain.height);
   c.fillStyle="rgba(0,200,255,0.2)";
-  drops.forEach(d=>{
-    c.fillRect(d.x,d.y,2,10);
-    d.y+=5;
-    if(d.y>rain.height)d.y=0;
-  });
+  drops.forEach(d=>{c.fillRect(d.x,d.y,2,10); d.y+=5; if(d.y>rain.height)d.y=0;});
 },30);
-
 </script>
-
 </body>
 </html>
