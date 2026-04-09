@@ -3,302 +3,271 @@
 <head>
 <meta charset="UTF-8">
 <title>🤡 Scanner X</title>
+
 <style>
-/* GLOBAL STYLES */
 body{
   margin:0;
   font-family:'Segoe UI';
-  background:#0a0c10;
+  background:linear-gradient(135deg,#05070a,#0a0c10,#020305);
   color:#e0e0e0;
   overflow-x:hidden;
-  animation:bgPulse 8s infinite alternate;
-}
-@keyframes bgPulse{
-  0%{background:#0a0c10}
-  50%{background:#05070a}
-  100%{background:#0a0c10}
 }
 
-/* HEADER */
+/* LOGIN */
+#login{
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+#login input{
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
+}
+#login button{
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px;
+  background:#00ccff;
+  border:none;
+  cursor:pointer;
+}
+
+/* APP */
+#app{display:none;}
+
 header{
   text-align:center;
-  padding:20px;
-  font-size:40px;
-  animation:glowHeader 2s infinite alternate, floatHeader 4s infinite alternate;
+  font-size:38px;
+  padding:15px;
+  animation:glow 2s infinite alternate;
 }
-@keyframes glowHeader{
-  0%{text-shadow:0 0 10px #00ffea,0 0 20px #00ccff;}
-  50%{text-shadow:0 0 25px #00ffea,0 0 50px #00ccff;}
-  100%{text-shadow:0 0 10px #00ffea,0 0 20px #00ccff;}
-}
-@keyframes floatHeader{
-  0%{transform: translateY(0px)}
-  50%{transform: translateY(-12px)}
-  100%{transform: translateY(0px)}
+@keyframes glow{
+  0%{text-shadow:0 0 10px cyan;}
+  100%{text-shadow:0 0 30px cyan;}
 }
 
-/* NAVIGATION */
-nav{
-  display:flex;
-  justify-content:center;
-  margin-bottom:10px;
-  animation:navPulse 3s infinite alternate;
-}
-@keyframes navPulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.03)}
-  100%{transform:scale(1)}
-}
+nav{text-align:center;}
 nav button{
+  padding:10px;
   margin:5px;
-  padding:10px 18px;
-  background:#11161f;
   border-radius:8px;
-  color:#ccc;
+  background:#111;
+  color:white;
   cursor:pointer;
-  transition:.3s;
-  animation:btnPulse 2s infinite alternate;
-}
-nav button:hover{
-  transform:scale(1.15);
-  background:#00ccff;
-  color:#000;
-}
-@keyframes btnPulse{
-  0%{box-shadow:0 0 0px #00ffea;}
-  50%{box-shadow:0 0 15px #00ffea;}
-  100%{box-shadow:0 0 0px #00ffea;}
 }
 
-/* TABS */
-.tab{display:none;padding:15px;animation:tabFade 0.5s;}
+.tab{display:none;}
 .tab.active{display:block;}
-@keyframes tabFade{
-  0%{opacity:0;transform:translateY(10px);}
-  100%{opacity:1;transform:translateY(0);}
-}
 
-/* STATS */
 .stats{
   display:flex;
   justify-content:space-around;
-  margin-bottom:10px;
-  animation:statsPulse 3s infinite alternate;
-}
-@keyframes statsPulse{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.05);}
-  100%{transform:scale(1);}
+  margin:10px;
 }
 
-/* CARDS */
 .detections{
   display:flex;
   flex-wrap:wrap;
-  gap:12px;
+  gap:10px;
   justify-content:center;
-  transition:all 0.5s;
 }
+
 .card{
   background:#14181f;
-  border-radius:12px;
-  padding:12px;
-  width:260px;
-  transition:.3s;
-  animation:fadeIn 0.5s ease;
-  position:relative;
+  padding:10px;
+  border-radius:10px;
+  width:250px;
+  animation:fadeIn .5s;
 }
 @keyframes fadeIn{
-  0%{opacity:0;transform:translateY(20px);}
-  100%{opacity:1;transform:translateY(0);}
-}
-.card:hover{
-  transform:scale(1.08);
-  box-shadow:0 0 25px #00ffea,0 0 50px #00ccff;
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;}
 }
 
-/* INSANEEE ANIMATIONS */
 .insane{
-  animation:insanePulse 0.5s infinite alternate, insaneShake 0.5s infinite alternate;
-  position:relative;
+  animation:insane 0.4s infinite alternate;
 }
-@keyframes insanePulse{
-  0%{box-shadow:0 0 20px red, 0 0 50px yellow;}
-  50%{box-shadow:0 0 40px red,0 0 80px yellow;}
-  100%{box-shadow:0 0 20px red,0 0 50px yellow;}
-}
-@keyframes insaneShake{
-  0%{transform:translateX(0px);}
-  25%{transform:translateX(-3px);}
-  50%{transform:translateX(3px);}
-  75%{transform:translateX(-3px);}
-  100%{transform:translateX(0px);}
+@keyframes insane{
+  from{box-shadow:0 0 20px red;}
+  to{box-shadow:0 0 50px yellow;}
 }
 
-/* BUTTONS */
-.join-btn,.copy-btn{
-  display:block;
-  margin-top:8px;
-  padding:8px;
-  border-radius:6px;
-  text-align:center;
-  transition:0.3s;
-  font-weight:bold;
-}
-.join-btn{
-  background:#1f2933;
-  color:#fff;
-  text-decoration:none;
-}
-.join-btn:hover{
-  background:#00ffea;
-  color:#000;
-  transform:scale(1.1);
-}
-.copy-btn{
-  background:#333;
-  color:#ccc;
-  cursor:pointer;
-}
-.copy-btn:hover{
-  background:#00ffea;
-  color:#000;
-  transform:scale(1.1);
-}
-
-/* LEADERBOARD */
-.leaderboards{display:flex;gap:15px;margin-top:10px;}
-.leaderboard{
-  background:#14181f;
-  padding:10px;
-  border-radius:12px;
-  animation:fadeIn 1s ease, leaderGlow 2s infinite alternate;
-}
-@keyframes leaderGlow{
-  0%{box-shadow:0 0 5px #00ffea;}
-  50%{box-shadow:0 0 20px #00ffea;}
-  100%{box-shadow:0 0 5px #00ffea;}
-}
-.leaderboard h3{
-  text-align:center;
-  animation:headerGlow 2s infinite alternate;
-}
-@keyframes headerGlow{
-  0%{color:#00ffea;text-shadow:0 0 5px #00ffea;}
-  50%{color:#00ccff;text-shadow:0 0 15px #00ffea,0 0 30px #00ccff;}
-  100%{color:#00ffea;text-shadow:0 0 5px #00ffea;}
-}
-.leaderboard ol{
-  list-style:none;
-  padding:0;
-}
-.leaderboard ol li{
+button.copy{
+  margin-top:5px;
   padding:5px;
-  margin:2px 0;
-  background:#11161f;
-  border-radius:6px;
-  animation:slideIn 0.5s ease forwards;
-  transition:all 0.3s;
-}
-.leaderboard ol li:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 15px #00ffea;
-}
-.leaderboard ol li.top1{animation:rainbowText 2s infinite; font-weight:bold;}
-.leaderboard ol li.top2{animation:rainbowText 2.5s infinite; font-weight:bold;}
-.leaderboard ol li.top3{animation:rainbowText 3s infinite; font-weight:bold;}
-@keyframes slideIn{
-  0%{opacity:0;transform:translateX(-20px);}
-  100%{opacity:1;transform:translateX(0);}
-}
-@keyframes rainbowText{
-  0%{color:red;}
-  25%{color:orange;}
-  50%{color:yellow;}
-  75%{color:green;}
-  100%{color:red;}
+  width:100%;
+  cursor:pointer;
 }
 
 /* POPUP */
 #popup{
   position:fixed;
-  top:15%;
+  top:20%;
   left:50%;
   transform:translateX(-50%);
-  padding:20px;
   background:red;
-  color:white;
-  font-size:30px;
+  padding:20px;
   display:none;
-  border-radius:12px;
-  animation:pop 0.5s ease, popupGlow 1s infinite alternate;
-}
-@keyframes pop{
-  0%{transform:translate(-50%,-100px);opacity:0}
-  100%{transform:translate(-50%,0);opacity:1}
-}
-@keyframes popupGlow{
-  0%{text-shadow:0 0 10px yellow}
-  50%{text-shadow:0 0 25px orange}
-  100%{text-shadow:0 0 10px yellow}
+  font-size:30px;
 }
 </style>
 </head>
+
 <body>
+
 <div id="popup">🔥 INSANEEE 100M+ DETECTED 🔥</div>
-<div id="app" style="display:none">
+
+<!-- LOGIN -->
+<div id="login">
+  <h2>Enter Key</h2>
+  <input id="key">
+  <br>
+  <button onclick="login()">Login</button>
+  <p id="err" style="color:red"></p>
+</div>
+
+<!-- APP -->
+<div id="app">
+
 <header>🤡 Scanner X</header>
+
 <nav>
   <button onclick="tab('dash')">Dashboard</button>
   <button id="prioBtn" onclick="tab('prio')" style="display:none">Priority</button>
-  <button onclick="tab('leader')">Leaderboard</button>
 </nav>
 
-<!-- NORMAL DASHBOARD -->
 <div id="dash" class="tab active">
   <div class="stats">
-    <div id="total">Brainrots Detected: 0</div>
-    <div id="best">Best: None</div>
+    <div id="count">0 detections</div>
+    <div id="best">Best: none</div>
   </div>
+  <h3>New</h3>
   <div id="new" class="detections"></div>
+  <h3>Old</h3>
   <div id="old" class="detections"></div>
 </div>
 
-<!-- PRIORITY DASHBOARD -->
 <div id="prio" class="tab">
   <div class="stats">
-    <div id="ptotal">Brainrots Detected: 0</div>
-    <div id="pbest">Best: None</div>
+    <div id="pcount">0 detections</div>
+    <div id="pbest">Best: none</div>
   </div>
+  <h3>New</h3>
   <div id="pnew" class="detections"></div>
+  <h3>Old</h3>
   <div id="pold" class="detections"></div>
 </div>
 
-<!-- LEADERBOARD -->
-<div id="leader" class="tab">
-  <div class="leaderboards">
-    <div class="leaderboard"><h3>Global</h3><ol id="global"></ol></div>
-    <div class="leaderboard"><h3>Priority</h3><ol id="prioList"></ol></div>
-    <div class="leaderboard"><h3>Top</h3><ol id="top"></ol></div>
-  </div>
-</div>
 </div>
 
 <script>
-// Same logic as previous scripts for fetching detections, updating dashboards, old/new detections, insane popups
-// Plus this leaderboard animation logic:
-function animateLeaderboard(){
-  ['global','prioList','top'].forEach(id=>{
-    const list=document.getElementById(id);
-    Array.from(list.children).forEach((li,i)=>{
-      li.classList.remove('top1','top2','top3');
-      if(i==0) li.classList.add('top1');
-      else if(i==1) li.classList.add('top2');
-      else if(i==2) li.classList.add('top3');
-    });
-  });
+
+// KEYS
+const NORMAL="macielissocute";
+const PRIO="prio112233";
+
+function login(){
+  let k=document.getElementById("key").value;
+
+  if(k===NORMAL){
+    start(false);
+  }
+  else if(k===PRIO){
+    start(true);
+  }
+  else{
+    document.getElementById("err").innerText="Invalid key";
+  }
 }
-setInterval(animateLeaderboard,1000);
+
+function start(prio){
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="block";
+  if(prio) document.getElementById("prioBtn").style.display="inline-block";
+}
+
+function tab(id){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+// STORAGE
+let detections=[];
+let oldDetections=[];
+
+// ADD DETECTION (SIMULATES LUA DATA)
+function addDetection(data){
+
+  detections.push({...data,time:Date.now()});
+
+  render();
+
+  // MOVE TO OLD AFTER 60s
+  setTimeout(()=>{
+    oldDetections.push({...data,owner:"Owner Left"});
+    detections = detections.filter(d=>d!==data);
+    render();
+  },60000);
+
+  // INSANE POPUP
+  if(data.gen>=100000000){
+    let pop=document.getElementById("popup");
+    pop.style.display="block";
+    setTimeout(()=>pop.style.display="none",2000);
+  }
+}
+
+// RENDER
+function render(){
+  let newDiv=document.getElementById("new");
+  let oldDiv=document.getElementById("old");
+
+  newDiv.innerHTML="";
+  oldDiv.innerHTML="";
+
+  let best=0;
+
+  detections.forEach(d=>{
+    let c=document.createElement("div");
+    c.className="card"+(d.gen>=100000000?" insane":"");
+    c.innerHTML=`
+      <b>${d.name}</b><br>
+      ${d.gen}/s<br>
+      Owner: ${d.owner}<br>
+      <button class="copy" onclick="navigator.clipboard.writeText('${d.job}')">Copy JobId</button>
+    `;
+    newDiv.appendChild(c);
+    if(d.gen>best) best=d.gen;
+  });
+
+  oldDetections.forEach(d=>{
+    let c=document.createElement("div");
+    c.className="card";
+    c.innerHTML=`
+      <b>${d.name}</b><br>
+      Owner Left
+    `;
+    oldDiv.appendChild(c);
+  });
+
+  document.getElementById("count").innerText=detections.length+" detections";
+  document.getElementById("best").innerText="Best: "+best;
+}
+
+// 🔥 SIMULATED DATA (REPLACE WITH BACKEND LATER)
+setInterval(()=>{
+  addDetection({
+    name:"Brainrot",
+    gen:Math.floor(Math.random()*150000000),
+    owner:"Player",
+    job:"JOB-"+Math.floor(Math.random()*99999)
+  });
+},4000);
+
 </script>
+
 </body>
 </html>
