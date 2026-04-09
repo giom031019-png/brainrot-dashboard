@@ -1,194 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>🤡 Scanner X</title>
+<title>Scanner X</title>
 
 <style>
-body{
-  margin:0;
-  font-family:'Segoe UI';
-  background:#0a0c10;
-  color:#e0e0e0;
-}
-
-/* LOGIN */
-#login{
-  position:absolute;
-  top:40%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-}
-input,button{
-  padding:10px;
-  border-radius:8px;
-  border:none;
-}
-button{background:#00ccff;cursor:pointer;}
-
+body{background:#0a0c10;color:#fff;font-family:sans-serif;margin:0}
+#login{text-align:center;margin-top:20%}
 #app{display:none}
-
-/* HEADER */
-header{
-  text-align:center;
-  font-size:40px;
-  padding:15px;
-  text-shadow:0 0 15px #00ffea;
-}
-
-/* NAV */
-nav{
-  display:flex;
-  justify-content:center;
-}
-nav button{
-  margin:5px;
-  background:#111;
-  color:#ccc;
-}
-nav button:hover{
-  background:#00ccff;
-  color:#000;
-}
-
-/* TABS */
-.tab{display:none;padding:15px;}
-.tab.active{display:block}
-
-/* CARDS */
-.detections{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  justify-content:center;
-}
-.card{
-  background:#14181f;
-  padding:10px;
-  width:240px;
-  border-radius:10px;
-}
-.card:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 15px #00ffea;
-}
-
-/* INSANE */
-.insane{
-  animation:shake 0.3s infinite alternate;
-  box-shadow:0 0 25px red,0 0 50px yellow;
-}
-@keyframes shake{
-  from{transform:translateX(-3px);}
-  to{transform:translateX(3px);}
-}
-
-/* LEADERBOARD */
-.leaderboard{
-  max-width:400px;
-  margin:auto;
-}
-.leaderboard li{
-  padding:6px;
-  background:#111;
-  margin:3px;
-  border-radius:6px;
-}
-.top1{color:gold;}
-.top2{color:silver;}
-.top3{color:#cd7f32;}
-
-/* POPUP */
-#popup{
-  position:fixed;
-  top:20%;
-  left:50%;
-  transform:translateX(-50%);
-  background:red;
-  padding:20px;
-  display:none;
-  font-size:25px;
-  border-radius:10px;
-}
+.card{background:#111;padding:10px;margin:5px;border-radius:8px;width:220px}
+.detections{display:flex;flex-wrap:wrap;justify-content:center}
+.insane{animation:shake .2s infinite alternate;box-shadow:0 0 20px red}
+@keyframes shake{from{transform:translateX(-2px)}to{transform:translateX(2px)}}
 </style>
 </head>
 
 <body>
 
 <div id="login">
-  <h2>Password</h2>
-  <input id="pass" type="password">
-  <br><br>
-  <button onclick="login()">Enter</button>
+<input id="pass" placeholder="password">
+<button onclick="login()">Enter</button>
 </div>
-
-<div id="popup">🔥 100M+ DETECTED 🔥</div>
 
 <div id="app">
+<h1>Scanner X</h1>
 
-<header>🤡 Scanner X</header>
-
-<nav>
-<button onclick="tab('dash')">Dashboard</button>
-<button id="prioBtn" onclick="tab('prio')" style="display:none">Priority</button>
-<button onclick="tab('leader')">Leaderboard</button>
-</nav>
-
-<!-- NORMAL -->
-<div id="dash" class="tab active">
-<h3>New</h3>
+<h2>New</h2>
 <div id="new" class="detections"></div>
-<h3>Old</h3>
+
+<h2>Old</h2>
 <div id="old" class="detections"></div>
-</div>
 
-<!-- PRIORITY -->
-<div id="prio" class="tab">
-<h3>2.5M+</h3>
-<div id="pnew" class="detections"></div>
-<h3>Old</h3>
-<div id="pold" class="detections"></div>
-</div>
-
-<!-- LEADERBOARD -->
-<div id="leader" class="tab">
-<ul id="board" class="leaderboard"></ul>
-</div>
-
+<h2>Leaderboard</h2>
+<ul id="board"></ul>
 </div>
 
 <script>
-const NORMAL_PASS="macielissocute"
-const PRIO_PASS="prio112233"
+const NORMAL="macielissocute"
+const PRIO="prio112233"
 
 let seen=new Set()
 let oldList=[]
-let isPrio=false
 
 function login(){
-  const val=document.getElementById("pass").value
-
-  if(val===NORMAL_PASS){
-    start(false)
-  } else if(val===PRIO_PASS){
-    start(true)
+  const v=document.getElementById("pass").value
+  if(v===NORMAL||v===PRIO){
+    document.getElementById("login").style.display="none"
+    document.getElementById("app").style.display="block"
   }
-}
-
-function start(prio){
-  isPrio=prio
-  document.getElementById("login").style.display="none"
-  document.getElementById("app").style.display="block"
-
-  if(prio){
-    document.getElementById("prioBtn").style.display="inline-block"
-  }
-}
-
-function tab(id){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
-  document.getElementById(id).classList.add("active")
 }
 
 function makeCard(d){
@@ -197,93 +56,58 @@ function makeCard(d){
 
   if(d.gen>=100000000){
     div.classList.add("insane")
-    popup()
   }
 
   div.innerHTML=`
-    <b>${d.name}</b><br>
-    ${d.gen}<br>
-    ${d.traits}<br>
-    ${d.mutation}<br>
-    Owner: ${d.owner}
-    <div onclick="navigator.clipboard.writeText('${d.jobId}')">Copy JobId</div>
+  <b>${d.name}</b><br>
+  ${d.gen}<br>
+  ${d.traits}<br>
+  ${d.mutation}<br>
+  ${d.owner}
   `
   return div
 }
 
-function popup(){
-  const p=document.getElementById("popup")
-  p.style.display="block"
-  setTimeout(()=>p.style.display="none",2000)
-}
-
 async function load(){
-  try{
-    const res=await fetch("https://brainrot-dashboard-ichq.onrender.com/detections")
-    const data=await res.json()
+  const res=await fetch("https://brainrot-dashboard-ichq.onrender.com/detections")
+  const json=await res.json()
+  const data=json.detections||[]
 
-    const newBox=document.getElementById("new")
-    const oldBox=document.getElementById("old")
-    const pnew=document.getElementById("pnew")
-    const pold=document.getElementById("pold")
+  const newBox=document.getElementById("new")
+  const oldBox=document.getElementById("old")
 
-    newBox.innerHTML=""
-    pnew.innerHTML=""
+  newBox.innerHTML=""
 
-    data.reverse().forEach(d=>{
-      if(!d.gen) return
+  data.reverse().forEach(d=>{
+    const key=d.name+d.gen+d.owner
 
-      const key=d.name+d.gen+d.owner
+    if(!seen.has(key)){
+      seen.add(key)
+      oldList.push(d)
 
-      if(!seen.has(key)){
-        seen.add(key)
-        oldList.push(d)
-
-        if(d.gen>=50000 && d.gen<2500000){
-          newBox.appendChild(makeCard(d))
-        }
-
-        if(d.gen>=2500000){
-          pnew.appendChild(makeCard(d))
-        }
+      if(d.gen>=50000){
+        newBox.appendChild(makeCard(d))
       }
-    })
+    }
+  })
 
-    oldBox.innerHTML=""
-    pold.innerHTML=""
+  oldBox.innerHTML=""
+  oldList.slice(-50).forEach(d=>{
+    oldBox.appendChild(makeCard(d))
+  })
 
-    oldList.slice(-50).forEach(d=>{
-      if(d.gen>=50000 && d.gen<2500000){
-        oldBox.appendChild(makeCard(d))
-      }
-      if(d.gen>=2500000){
-        pold.appendChild(makeCard(d))
-      }
-    })
-
-    updateLeaderboard(oldList)
-
-  }catch(e){}
+  updateBoard(oldList)
 }
 
-function updateLeaderboard(list){
+function updateBoard(list){
   const board=document.getElementById("board")
   board.innerHTML=""
 
-  list
-    .filter(d=>d.gen)
-    .sort((a,b)=>b.gen-a.gen)
-    .slice(0,10)
-    .forEach((d,i)=>{
-      const li=document.createElement("li")
-      li.innerText=`${d.name} - ${d.gen}`
-
-      if(i===0) li.classList.add("top1")
-      if(i===1) li.classList.add("top2")
-      if(i===2) li.classList.add("top3")
-
-      board.appendChild(li)
-    })
+  list.sort((a,b)=>b.gen-a.gen).slice(0,10).forEach(d=>{
+    const li=document.createElement("li")
+    li.innerText=d.name+" - "+d.gen
+    board.appendChild(li)
+  })
 }
 
 setInterval(load,2000)
