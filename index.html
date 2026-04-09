@@ -69,6 +69,12 @@ nav{
   display:flex;
   justify-content:center;
   margin-bottom:10px;
+  animation:navPulse 3s infinite alternate;
+}
+@keyframes navPulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.03)}
+  100%{transform:scale(1)}
 }
 nav button{
   margin:5px;
@@ -86,7 +92,6 @@ nav button:hover{
 /* TABS */
 .tab{display:none;padding:15px;animation:fadeIn 0.5s;}
 .tab.active{display:block;}
-
 @keyframes fadeIn{
   0%{opacity:0;transform:translateY(10px);}
   100%{opacity:1;transform:translateY(0);}
@@ -112,7 +117,7 @@ nav button:hover{
   padding:12px;
   width:260px;
   transition:.3s;
-  position:relative;
+  animation:fadeIn 0.5s ease;
 }
 .card:hover{
   transform:scale(1.08);
@@ -121,13 +126,13 @@ nav button:hover{
 
 /* INSANE */
 .insane{
-  animation:insanePulse 0.5s infinite alternate, shake 0.4s infinite;
+  animation:insanePulse 0.5s infinite alternate, insaneShake 0.4s infinite;
 }
 @keyframes insanePulse{
   0%{box-shadow:0 0 20px red;}
   100%{box-shadow:0 0 50px yellow;}
 }
-@keyframes shake{
+@keyframes insaneShake{
   0%{transform:translateX(-3px);}
   100%{transform:translateX(3px);}
 }
@@ -141,6 +146,12 @@ nav button:hover{
   background:#14181f;
   padding:10px;
   border-radius:12px;
+  animation:leaderGlow 2s infinite alternate;
+}
+@keyframes leaderGlow{
+  0%{box-shadow:0 0 5px #00ffea;}
+  50%{box-shadow:0 0 20px #00ffea;}
+  100%{box-shadow:0 0 5px #00ffea;}
 }
 .leaderboard li{
   padding:5px;
@@ -154,9 +165,8 @@ nav button:hover{
   box-shadow:0 0 10px #00ffea;
 }
 .top1{animation:rainbow 2s infinite;font-weight:bold;}
-.top2{color:silver;}
-.top3{color:#cd7f32;}
-
+.top2{color:silver;font-weight:bold;}
+.top3{color:#cd7f32;font-weight:bold;}
 @keyframes rainbow{
   0%{color:red;}
   25%{color:orange;}
@@ -204,7 +214,7 @@ nav button:hover{
 
 <nav>
   <button onclick="tab('dash')">Dashboard</button>
-  <button onclick="tab('prio')">Priority</button>
+  <button id="prioBtn" onclick="tab('prio')">Priority</button>
   <button onclick="tab('leader')">Leaderboard</button>
 </nav>
 
@@ -243,11 +253,16 @@ nav button:hover{
 </div>
 
 <script>
-const API="https://brainrot-dashboard-ichq.onrender.com"
+const API="https://YOUR-RENDER-URL.onrender.com/detections"
 
 let oldN=[], oldP=[], seen=[]
+let role="normal"
 
 function tab(id){
+  if(id==="prio" && role!=="prio"){
+    alert("No access to Priority")
+    return
+  }
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
   document.getElementById(id).classList.add('active')
 }
@@ -262,11 +277,15 @@ function login(){
   const key=document.getElementById("keyInput").value
 
   if(key==="macielissocute"){
+    role="normal"
+    document.getElementById("prioBtn").style.display="none"
     document.getElementById("login").style.display="none"
     document.getElementById("app").style.display="block"
     tab('dash')
   }
   else if(key==="prio112233"){
+    role="prio"
+    document.getElementById("prioBtn").style.display="inline-block"
     document.getElementById("login").style.display="none"
     document.getElementById("app").style.display="block"
     tab('prio')
@@ -359,11 +378,9 @@ function updateLeaderboard(list){
   sorted.forEach((d,i)=>{
     const li=document.createElement("li")
     li.innerText=`${d.name} (${d.gen})`
-
     if(i==0) li.classList.add("top1")
     if(i==1) li.classList.add("top2")
     if(i==2) li.classList.add("top3")
-
     lb.appendChild(li)
   })
 }
