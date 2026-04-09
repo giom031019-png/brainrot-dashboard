@@ -1,168 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>🤡 Scanner X</title>
-
-<style>
-body{
-margin:0;
-font-family:'Segoe UI';
-background:#05070a;
-color:#e0e0e0;
-overflow-x:hidden;
-animation:bgPulse 6s infinite alternate;
-}
-
-@keyframes bgPulse{
-0%{background:#05070a}
-100%{background:#0b0f14}
-}
-
-canvas{position:fixed;top:0;left:0;z-index:-1}
-
-/* HEADER */
-header{
-text-align:center;
-padding:20px;
-font-size:36px;
-animation:glow 2s infinite alternate;
-}
-
-@keyframes glow{
-from{text-shadow:0 0 10px #00ccff}
-to{text-shadow:0 0 25px #00ccff,0 0 40px #00ccff}
-}
-
-/* NAV */
-nav{display:flex;justify-content:center}
-nav button{
-margin:5px;
-padding:10px 18px;
-background:#161b22;
-border-radius:8px;
-color:#ccc;
-cursor:pointer;
-transition:.3s;
-}
-nav button:hover{transform:scale(1.1);background:#222}
-
-/* TABS */
-.tab{display:none;padding:15px}
-.tab.active{display:block}
-
-/* CARDS */
-.card{
-background:#14181f;
-border-radius:12px;
-padding:12px;
-width:260px;
-transition:.3s;
-animation:fadeIn .5s ease;
-}
-
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(20px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-.card:hover{
-transform:scale(1.07);
-box-shadow:0 0 15px #00ccff;
-}
-
-.insane{
-animation:insaneFlash .3s infinite;
-}
-
-@keyframes insaneFlash{
-0%{box-shadow:0 0 20px red}
-50%{box-shadow:0 0 40px yellow}
-100%{box-shadow:0 0 20px red}
-}
-
-/* BUTTONS */
-.join-btn,.copy-btn{
-display:block;margin-top:8px;padding:8px;border-radius:6px;text-align:center
-}
-.join-btn{background:#1f2933;color:#fff;text-decoration:none}
-.copy-btn{background:#333;color:#ccc;cursor:pointer}
-
-/* LISTS */
-.leaderboard{
-background:#14181f;
-padding:10px;
-border-radius:10px;
-animation:fadeIn .5s ease;
-}
-
-/* LAYOUT */
-.detections{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-.leaderboards{display:flex;gap:15px}
-.stats{display:flex;justify-content:space-around}
-
-/* POPUP */
-#popup{
-position:fixed;
-top:20%;
-left:50%;
-transform:translateX(-50%);
-padding:20px;
-background:red;
-color:white;
-font-size:30px;
-display:none;
-border-radius:12px;
-animation:pop 0.5s ease;
-}
-
-@keyframes pop{
-from{transform:translate(-50%,-100px);opacity:0}
-to{transform:translate(-50%,0);opacity:1}
-}
-
-</style>
-</head>
-
-<body>
-
-<canvas id="rain"></canvas>
-<div id="popup">🔥 INSANEEE 100M+ DETECTED 🔥</div>
-
-<div id="app" style="display:none">
-
-<header>🤡 Scanner X</header>
-
-<nav>
-<button onclick="tab('dash')">Dashboard</button>
-<button id="prioBtn" onclick="tab('prio')" style="display:none">Priority</button>
-<button onclick="tab('leader')">Leaderboard</button>
-</nav>
-
-<div id="dash" class="tab active">
-<div class="stats">
-<div id="total">0</div>
-<div id="best">None</div>
-</div>
-<div id="new" class="detections"></div>
-<div id="old" class="detections"></div>
-</div>
-
-<div id="prio" class="tab">
-<div id="pnew" class="detections"></div>
-<div id="pold" class="detections"></div>
-</div>
-
-<div id="leader" class="tab">
-<div class="leaderboards">
-<div class="leaderboard"><h3>Global</h3><ol id="global"></ol></div>
-<div class="leaderboard"><h3>Priority</h3><ol id="prioList"></ol></div>
-<div class="leaderboard"><h3>Top</h3><ol id="top"></ol></div>
-</div>
-</div>
-
-</div>
-
 <script>
 
 /* CONFIG */
@@ -174,7 +9,6 @@ const WEBHOOK="https://discord.com/api/webhooks/1490855576593367250/90oVcQCQCdmr
   let key = prompt("Enter Key");
 
   let type = "none";
-
   if (key === "macielissocute") type = "normal";
   if (key === "prio112233") type = "prio";
 
@@ -211,115 +45,121 @@ const WEBHOOK="https://discord.com/api/webhooks/1490855576593367250/90oVcQCQCdmr
 
 /* TAB */
 function tab(t){
-document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-document.getElementById(t).classList.add("active");
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.getElementById(t).classList.add("active");
 }
 
 /* UTILS */
 function format(g){
-return g>=1e6?(g/1e6).toFixed(1)+"M":
-g>=1e3?(g/1e3).toFixed(1)+"K":g;
+  return g>=1e6?(g/1e6).toFixed(1)+"M":
+         g>=1e3?(g/1e3).toFixed(1)+"K":g;
 }
 
 function rarity(g){
-if(g>=100000000)return"INSANEEE";
-if(g>=1000000)return"BEST";
-if(g>=25000)return"RARE";
-return"COMMON";
+  if(g>=100000000)return"INSANEEE";
+  if(g>=1000000)return"BEST";
+  if(g>=25000)return"RARE";
+  return"COMMON";
 }
 
 function copy(id){
-navigator.clipboard.writeText(id);
+  navigator.clipboard.writeText(id);
 }
 
 /* LOAD */
 async function load(){
-let res=await fetch(API);
-let json=await res.json();
+  let res = await fetch(API);
+  let json = await res.json();
+  let data = json.detections;
 
-let data=json.detections;
+  // Fix: get elements correctly
+  const newC = document.getElementById("new");
+  const oldC = document.getElementById("old");
+  const pnewC = document.getElementById("pnew");
+  const poldC = document.getElementById("pold");
+  const totalEl = document.getElementById("total");
+  const bestEl = document.getElementById("best");
+  const globalEl = document.getElementById("global");
+  const prioListEl = document.getElementById("prioList");
+  const topEl = document.getElementById("top");
+  const popup = document.getElementById("popup");
 
-new.innerHTML="";
-old.innerHTML="";
-pnew.innerHTML="";
-pold.innerHTML="";
+  newC.innerHTML = "";
+  oldC.innerHTML = "";
+  pnewC.innerHTML = "";
+  poldC.innerHTML = "";
 
-/* stats */
-total.innerText=data.length;
-best.innerText=data[0]?data[0].name+" "+format(data[0].gen):"None";
+  /* stats */
+  totalEl.innerText = data.length;
+  bestEl.innerText = data[0] ? data[0].name + " " + format(data[0].gen) : "None";
 
-/* leaderboard */
-global.innerHTML="";
-prioList.innerHTML="";
-top.innerHTML="";
+  /* leaderboard */
+  globalEl.innerHTML = "";
+  prioListEl.innerHTML = "";
+  topEl.innerHTML = "";
 
-data.sort((a,b)=>b.gen-a.gen);
+  data.sort((a,b)=>b.gen-a.gen);
 
-data.slice(0,50).forEach(d=>{
-global.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`;
-});
+  data.slice(0,50).forEach(d=>{
+    globalEl.innerHTML += `<li>${d.name} ${format(d.gen)}</li>`;
+  });
 
-data.filter(d=>d.gen>=1000000).forEach(d=>{
-prioList.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`;
-});
+  data.filter(d=>d.gen>=1000000).forEach(d=>{
+    prioListEl.innerHTML += `<li>${d.name} ${format(d.gen)}</li>`;
+  });
 
-data.slice(0,10).forEach(d=>{
-top.innerHTML+=`<li>${d.name} ${format(d.gen)}</li>`;
-});
+  data.slice(0,10).forEach(d=>{
+    topEl.innerHTML += `<li>${d.name} ${format(d.gen)}</li>`;
+  });
 
-/* cards */
-data.forEach(d=>{
-if(d.gen<50000)return;
+  /* cards */
+  data.forEach(d=>{
+    if(d.gen<50000) return;
 
-let expired=(Date.now()-d.timestamp)/1000>60;
-let isPrio=d.gen>=1000000;
+    let expired = (Date.now() - d.timestamp)/1000 > 60;
+    let isPrio = d.gen >= 1000000;
+    let insane = d.gen >= 100000000;
 
-let insane=d.gen>=100000000;
+    if(insane){
+      popup.style.display = "block";
+      setTimeout(()=>popup.style.display="none",2000);
+    }
 
-if(insane){
-popup.style.display="block";
-setTimeout(()=>popup.style.display="none",2000);
-}
+    let card = `
+      <div class="card ${insane?"insane":""}">
+        <h2>${d.name}</h2>
+        <p>${format(d.gen)}</p>
+        <p>${rarity(d.gen)}</p>
+        ${!expired ? `
+          <a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
+          <button class="copy-btn" onclick="copy('${d.jobId}')">Copy</button>
+        ` : `<p style="color:red">Owner Left</p>`}
+      </div>
+    `;
 
-let card=`
-<div class="card ${insane?"insane":""}">
-<h2>${d.name}</h2>
-<p>${format(d.gen)}</p>
-<p>${rarity(d.gen)}</p>
-
-${!expired?`
-<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
-<button class="copy-btn" onclick="copy('${d.jobId}')">Copy</button>
-`:`<p style="color:red">Owner Left</p>`}
-</div>
-`;
-
-if(isPrio){
-expired?pold.innerHTML+=card:pnew.innerHTML+=card;
-}else{
-expired?old.innerHTML+=card:new.innerHTML+=card;
-}
-});
+    if(isPrio){
+      expired ? poldC.innerHTML += card : pnewC.innerHTML += card;
+    } else {
+      expired ? oldC.innerHTML += card : newC.innerHTML += card;
+    }
+  });
 }
 
 /* RAIN */
-const c=rain.getContext("2d");
-rain.width=innerWidth;
-rain.height=innerHeight;
+const c = document.getElementById("rain").getContext("2d");
+rain.width = innerWidth;
+rain.height = innerHeight;
 
-let drops=Array.from({length:200},()=>({x:Math.random()*rain.width,y:Math.random()*rain.height}));
+let drops = Array.from({length:200},()=>({x:Math.random()*rain.width,y:Math.random()*rain.height}));
 
 setInterval(()=>{
-c.clearRect(0,0,rain.width,rain.height);
-c.fillStyle="rgba(0,200,255,0.2)";
-drops.forEach(d=>{
-c.fillRect(d.x,d.y,2,10);
-d.y+=5;
-if(d.y>rain.height)d.y=0;
-});
+  c.clearRect(0,0,rain.width,rain.height);
+  c.fillStyle="rgba(0,200,255,0.2)";
+  drops.forEach(d=>{
+    c.fillRect(d.x,d.y,2,10);
+    d.y+=5;
+    if(d.y>rain.height)d.y=0;
+  });
 },30);
 
 </script>
-
-</body>
-</html>
