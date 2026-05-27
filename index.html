@@ -1,228 +1,511 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>🤡 Roba un Payaso Scanner Dashboard</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pubertad y Sistemas Reproductores — Giovanni #10</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-body{margin:0;font-family:'Segoe UI',sans-serif;background:#0b0f14;color:#e0e0e0;overflow-x:hidden}
-canvas{position:fixed;top:0;left:0;z-index:-1}
+  :root {
+    --bg: #f5f2eb;
+    --ink: #1a1714;
+    --muted: #6b6660;
+    --accent: #c8502a;
+    --accent2: #2a7cc8;
+    --accent3: #2a9c5c;
+    --accent4: #8c2ac8;
+    --surface: #ffffff;
+    --border: rgba(26,23,20,0.1);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    overflow-x: hidden;
+    font-size: 15px;
+    line-height: 1.65;
+  }
 
-header{text-align:center;padding:20px;font-size:34px;color:#fff;text-shadow:0 0 15px #00ccff}
+  /* PARTICLES BG */
+  #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+  .particle {
+    position: absolute; border-radius: 50%;
+    background: var(--accent); opacity: 0.06;
+    animation: drift linear infinite;
+  }
+  @keyframes drift {
+    0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.06; }
+    90% { opacity: 0.06; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
 
-nav{display:flex;justify-content:center;padding:10px}
-nav button{margin:0 8px;padding:10px 18px;background:#161b22;border-radius:8px;color:#ccc;cursor:pointer}
-nav button:hover{background:#222}
+  /* HEADER HERO */
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 4rem 2rem; text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200,80,42,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent);
+    opacity: 0; animation: slideUp 0.8s 0.2s ease forwards;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--accent);
+  }
+  .hero-title {
+    font-family: 'Syne', sans-serif; font-size: clamp(2.8rem, 7vw, 6rem);
+    font-weight: 800; line-height: 1.05; letter-spacing: -0.02em;
+    opacity: 0; animation: slideUp 0.9s 0.35s ease forwards;
+    margin-bottom: 1rem;
+  }
+  .hero-title .line2 { color: var(--accent); display: block; }
+  .hero-sub {
+    font-size: 16px; color: var(--muted); max-width: 480px;
+    opacity: 0; animation: slideUp 0.9s 0.5s ease forwards;
+    margin-bottom: 2.5rem; font-style: italic;
+  }
+  .author-tag {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    background: var(--ink); color: var(--bg); padding: 10px 24px;
+    border-radius: 100px; letter-spacing: 0.04em;
+    opacity: 0; animation: slideUp 0.9s 0.65s ease forwards;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .author-tag .num {
+    background: var(--accent); color: white; width: 22px; height: 22px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+  }
+  .scroll-hint {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    opacity: 0; animation: fadeIn 1s 1.5s ease forwards;
+    font-size: 12px; color: var(--muted); letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .scroll-hint::after {
+    content: ''; display: block; width: 1px; height: 40px; background: var(--muted);
+    margin: 8px auto 0; animation: scrollPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.5); opacity: 0.4; }
+  }
 
-.tab{display:none;padding:15px}
-.tab.active{display:block}
+  /* LAYOUT */
+  main { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 1.5rem 6rem; }
 
-.stats{display:flex;justify-content:space-around}
+  /* SECTION HEADERS */
+  .section-label {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800; line-height: 1.1; margin-bottom: 2.5rem;
+  }
+  .section-wrap { margin-bottom: 6rem; }
 
-.detections{display:flex;flex-wrap:wrap;gap:15px;justify-content:center}
+  /* REVEAL ANIMATION */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
 
-.card{background:#14181f;border-radius:12px;padding:12px;width:260px}
+  /* PROGRESS COUNTER */
+  .progress-section {
+    background: var(--ink); color: var(--bg);
+    border-radius: var(--radius); padding: 2rem 2.5rem;
+    margin-bottom: 3rem; display: flex; align-items: center; gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .progress-section h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; flex: 1; min-width: 180px; }
+  .prog-track { flex: 2; min-width: 200px; }
+  .prog-bar-wrap { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+  .prog-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.5s ease; border-radius: 3px; }
+  .prog-label { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .prog-count { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
 
-.join-btn,.copy-btn{
-display:block;margin-top:8px;padding:8px;text-align:center;border-radius:6px
-}
-.join-btn{background:#1f2933;color:#fff;text-decoration:none}
-.copy-btn{background:#333;color:#ccc;cursor:pointer}
+  /* QUESTIONS */
+  .q-list { display: flex; flex-direction: column; gap: 10px; }
+  .q-item {
+    background: var(--surface); border-radius: 12px;
+    border: 1.5px solid transparent;
+    cursor: pointer; overflow: hidden;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  }
+  .q-item:hover { border-color: rgba(200,80,42,0.3); transform: translateX(4px); box-shadow: -4px 0 0 0 var(--accent); }
+  .q-item.open { border-color: var(--accent); box-shadow: -4px 0 0 0 var(--accent); }
+  .q-head {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 20px; user-select: none;
+  }
+  .q-num {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    color: var(--accent); min-width: 28px; padding-top: 2px;
+  }
+  .q-text { font-size: 14px; font-weight: 500; flex: 1; line-height: 1.5; }
+  .q-arrow {
+    font-size: 18px; color: var(--muted); transition: transform 0.3s;
+    margin-left: 8px; flex-shrink: 0;
+  }
+  .q-item.open .q-arrow { transform: rotate(90deg); color: var(--accent); }
+  .q-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+    font-size: 14px; color: var(--muted); line-height: 1.7;
+    padding: 0 20px 0 62px;
+  }
+  .q-item.open .q-body { max-height: 300px; padding-bottom: 18px; }
 
-.priority{color:#ffd966}
-.rarity{color:#8fd3ff}
+  /* TABLES */
+  .fancy-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
+  .fancy-table thead tr { background: var(--ink); }
+  .fancy-table thead th { color: var(--bg); font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 14px 18px; text-align: left; }
+  .fancy-table tbody tr { background: var(--surface); transition: background 0.2s; }
+  .fancy-table tbody tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+  .fancy-table tbody tr:hover { background: rgba(200,80,42,0.06); }
+  .fancy-table td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; line-height: 1.55; }
+  .fancy-table tbody tr:last-child td { border-bottom: none; }
+  .pill {
+    display: inline-block; font-family: 'Syne', sans-serif; font-size: 11px;
+    font-weight: 700; padding: 3px 10px; border-radius: 100px; white-space: nowrap;
+  }
+  .pill-red { background: #fde8e2; color: #8c2a0e; }
+  .pill-blue { background: #e2eefe; color: #0e3a8c; }
+  .pill-green { background: #e2f7ec; color: #0e5c32; }
+  .pill-purple { background: #f0e2fe; color: #4a0e8c; }
+  .pill-pink { background: #fee2f2; color: #8c0e52; }
+  .pill-teal { background: #e2f5f5; color: #0e5c5c; }
 
-.leaderboards{display:flex;gap:20px}
-.leaderboard{flex:1;background:#14181f;padding:10px;border-radius:10px}
+  /* ORGAN CARDS */
+  .organ-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .organ-card {
+    background: var(--surface); border-radius: var(--radius);
+    border: 1.5px solid var(--border); padding: 20px;
+    cursor: pointer; transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .organ-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 0%; background: var(--card-accent, var(--accent));
+    transition: height 0.3s ease;
+  }
+  .organ-card:hover::before, .organ-card.active::before { height: 100%; }
+  .organ-card:hover { border-color: var(--card-accent, var(--accent)); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .organ-card.active { border-color: var(--card-accent, var(--accent)); background: rgba(200,80,42,0.03); }
+  .organ-icon { font-size: 28px; margin-bottom: 10px; }
+  .organ-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .organ-fn { font-size: 12px; color: var(--muted); line-height: 1.6; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s; opacity: 0; }
+  .organ-card.active .organ-fn { max-height: 200px; opacity: 1; }
+  .organ-hint { font-size: 11px; color: var(--accent); font-weight: 600; margin-top: 8px; transition: opacity 0.3s; }
+  .organ-card.active .organ-hint { opacity: 0; }
 
-#dashboard-wrapper{display:none}
+  /* CYCLE */
+  .cycle-container { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
+  .cycle-bar { display: flex; }
+  .cycle-phase {
+    flex: 1; padding: 20px 14px; cursor: pointer; text-align: center;
+    transition: filter 0.2s; position: relative;
+  }
+  .cycle-phase:not(:last-child)::after { content: ''; position: absolute; top: 20%; right: 0; height: 60%; width: 1px; background: rgba(0,0,0,0.08); }
+  .cycle-phase:hover { filter: brightness(0.95); }
+  .cycle-phase.active { filter: brightness(0.9); }
+  .phase-name { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .phase-days { font-size: 11px; opacity: 0.65; }
+  .cycle-detail-box { padding: 24px 28px; border-top: 1px solid var(--border); min-height: 90px; transition: opacity 0.3s; }
+  .cycle-detail-box p { font-size: 14px; line-height: 1.7; color: var(--muted); }
+  .cycle-detail-box strong { color: var(--ink); font-weight: 600; }
+
+  /* FOOTER */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .footer-by { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+  .footer-by .accent { color: var(--accent); }
+  .footer-sub { font-size: 13px; color: var(--muted); }
+  .footer-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 16px; background: var(--ink); color: var(--bg);
+    padding: 8px 20px; border-radius: 100px; font-size: 13px; font-weight: 500;
+  }
+  .badge-num {
+    background: var(--accent); width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800;
+  }
+
+  /* DIVIDER */
+  .divider { width: 48px; height: 3px; background: var(--accent); border-radius: 2px; margin: 0 0 2rem; }
+
+  @keyframes slideUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* FLOATING DECO */
+  .deco-circle {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+    opacity: 0.035; animation: floatDeco ease-in-out infinite alternate;
+  }
+  @keyframes floatDeco { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(-30px) scale(1.05); } }
+
+  @media (max-width: 600px) {
+    .q-grid { grid-template-columns: 1fr; }
+    .cycle-phase { padding: 14px 8px; }
+    .phase-name { font-size: 10px; }
+  }
 </style>
 </head>
-
 <body>
 
-<canvas id="rain"></canvas>
+<!-- Floating decorative circles -->
+<div class="deco-circle" style="width:400px;height:400px;background:var(--accent);top:-100px;right:-100px;animation-duration:7s;"></div>
+<div class="deco-circle" style="width:300px;height:300px;background:var(--accent2);bottom:10%;left:-80px;animation-duration:9s;"></div>
+<div class="deco-circle" style="width:200px;height:200px;background:var(--accent3);top:40%;right:5%;animation-duration:11s;"></div>
 
-<div id="dashboard-wrapper">
+<!-- Floating particles -->
+<div id="particles"></div>
 
-<header>🤡 Roba un Payaso Scanner Dashboard</header>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Ciencias Naturales · Biología</div>
+  <h1 class="hero-title">
+    Pubertad &<br>
+    <span class="line2">Sistemas Reproductores</span>
+  </h1>
+  <p class="hero-sub">Una guía completa sobre hormonas, pubertad y los sistemas reproductores masculino y femenino</p>
+  <div class="author-tag">
+    Hecho por Giovanni
+    <span class="num">10</span>
+  </div>
+  <div class="scroll-hint">Desplázate</div>
+</section>
 
-<nav>
-<button onclick="showTab('dashboard')">Dashboard</button>
-<button onclick="showTab('priority')">Top Priority</button>
-<button onclick="showTab('leaderboard')">Leaderboard</button>
-<button onclick="showTab('helpers')">Helpers</button>
-</nav>
+<main>
 
-<div id="dashboard" class="tab active">
-<div class="stats">
-<div><div id="total">0</div><div>Total</div></div>
-<div><div id="best">None</div><div>Best</div></div>
-</div>
+  <!-- PROGRESS -->
+  <div class="progress-section reveal">
+    <div>
+      <h3>Explora las 30 preguntas</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;">Haz clic en cada una para ver la respuesta</p>
+    </div>
+    <div class="prog-track">
+      <div class="prog-label"><span class="prog-count" id="open-num">0</span><span style="font-size:13px;color:rgba(255,255,255,0.4)"> / 30 abiertas</span></div>
+      <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-fill"></div></div>
+    </div>
+  </div>
 
-<h2>New</h2>
-<div id="new-detections" class="detections"></div>
+  <!-- QUESTIONS -->
+  <section class="section-wrap reveal">
+    <div class="section-label">Parte 1</div>
+    <h2 class="section-title">Preguntas Compuestas</h2>
+    <div class="divider"></div>
+    <div class="q-list" id="q-list"></div>
+  </section>
 
-<h2>Old</h2>
-<div id="old-detections" class="detections"></div>
-</div>
+  <!-- TABLE 1 HORMONAS -->
+  <section class="section-wrap reveal">
+    <div class="section-label">Cuadro 1</div>
+    <h2 class="section-title">Hormonas Sexuales</h2>
+    <div class="divider"></div>
+    <table class="fancy-table">
+      <thead>
+        <tr><th>Hormona</th><th>Órgano productor</th><th>Función</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="pill pill-purple">GnRH</span></td><td>Hipotálamo (cerebro)</td><td>Estimula la hipófisis para liberar FSH y LH, iniciando el eje reproductor. Sin esta hormona, el sistema reproductor no se activa.</td></tr>
+        <tr><td><span class="pill pill-blue">FSH</span></td><td>Hipófisis anterior</td><td>En mujeres: estimula el crecimiento de folículos ováricos. En hombres: favorece la producción de espermatozoides en los testículos.</td></tr>
+        <tr><td><span class="pill pill-blue">LH</span></td><td>Hipófisis anterior</td><td>En mujeres: desencadena la ovulación. En hombres: estimula las células de Leydig para producir testosterona.</td></tr>
+        <tr><td><span class="pill pill-red">Testosterona</span></td><td>Testículos (células de Leydig)</td><td>Desarrolla características sexuales secundarias masculinas (vello, voz grave, músculo), regula la producción de espermatozoides y la libido.</td></tr>
+        <tr><td><span class="pill pill-pink">Estrógeno</span></td><td>Ovarios (folículos y cuerpo lúteo)</td><td>Desarrolla características sexuales femeninas, engrosa el endometrio y regula el ciclo menstrual.</td></tr>
+        <tr><td><span class="pill pill-teal">Progesterona</span></td><td>Cuerpo lúteo (ovarios)</td><td>Prepara el útero para la implantación del embrión; si hay embarazo, lo mantiene durante los primeros meses.</td></tr>
+      </tbody>
+    </table>
+  </section>
 
-<div id="priority" class="tab">
-<h2>Top Priority</h2>
-<h3>New</h3>
-<div id="priority-new" class="detections"></div>
-<h3>Old</h3>
-<div id="priority-old" class="detections"></div>
-</div>
+  <!-- TABLE 2 MASCULINO -->
+  <section class="section-wrap reveal">
+    <div class="section-label">Cuadro 2</div>
+    <h2 class="section-title">Sistema Reproductor Masculino</h2>
+    <div class="divider"></div>
+    <div class="organ-grid" id="masc-grid"></div>
+  </section>
 
-<div id="leaderboard" class="tab">
-<div class="leaderboards">
-<div class="leaderboard"><h3>Global</h3><ol id="global-finds"></ol></div>
-<div class="leaderboard"><h3>Priority</h3><ol id="prio-finds"></ol></div>
-<div class="leaderboard"><h3>Best</h3><ol id="top-brainrots"></ol></div>
-</div>
-</div>
+  <!-- TABLE 3 FEMENINO -->
+  <section class="section-wrap reveal">
+    <div class="section-label">Cuadro 3</div>
+    <h2 class="section-title">Sistema Reproductor Femenino</h2>
+    <div class="divider"></div>
+    <div class="organ-grid" id="fem-grid"></div>
+  </section>
 
-<div id="helpers" class="tab"><center>gioyuhh • maico</center></div>
+  <!-- CICLO MENSTRUAL -->
+  <section class="section-wrap reveal">
+    <div class="section-label">Bonus</div>
+    <h2 class="section-title">Ciclo Menstrual (~28 días)</h2>
+    <div class="divider"></div>
+    <div class="cycle-container">
+      <div class="cycle-bar" id="cycle-bar"></div>
+      <div class="cycle-detail-box" id="cycle-detail">
+        <p><strong>Selecciona una fase</strong> para ver qué ocurre durante esos días y qué hormonas participan.</p>
+      </div>
+    </div>
+  </section>
 
-</div>
+</main>
+
+<footer>
+  <div class="footer-by">Hecho por <span class="accent">Giovanni</span></div>
+  <div class="footer-sub">Pubertad, Hormonas Sexuales y Sistemas Reproductores</div>
+  <div class="footer-badge">
+    <div class="badge-num">10</div>
+    Número 10
+  </div>
+</footer>
 
 <script>
-window.onload=()=>{
-const pw=prompt("Enter password:");
-if(pw==="macielissocute"){
-document.getElementById("dashboard-wrapper").style.display="block";
-loadData();
-setInterval(loadData,3000);
-}else{
-document.body.innerHTML="<h1 style='text-align:center;margin-top:20%'>Access Denied</h1>";
-}
-};
-
-function showTab(id){
-if(id==="priority"){
-const pass=prompt("Enter Top Priority password:");
-if(pass!=="11prio")return;
-}
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-document.getElementById(id).classList.add("active");
+// PARTICLES
+const pc = document.getElementById('particles');
+for (let i = 0; i < 18; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = 8 + Math.random() * 40;
+  const hues = ['var(--accent)','var(--accent2)','var(--accent3)','var(--accent4)'];
+  p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${hues[i%4]};animation-duration:${12+Math.random()*18}s;animation-delay:${-Math.random()*20}s;`;
+  pc.appendChild(p);
 }
 
-function formatGen(g){
-return g>=1e6?(g/1e6).toFixed(1)+"m":
-g>=1e3?(g/1e3).toFixed(1)+"k":g;
-}
+// SCROLL REVEAL
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, idx) => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), idx * 80); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-function rarityLabel(g){
-if(g>=1e6)return"<span class='priority'>TOP PRIORITY</span>";
-if(g>=1e5)return"<span class='rarity'>Legendary</span>";
-if(g>=25000)return"<span class='rarity'>Rare</span>";
-return"<span class='rarity'>Common</span>";
-}
+// QUESTIONS
+const QUESTIONS = [
+  ["¿Qué son las hormonas sexuales y cuál es su función en la reproducción humana?", "Las hormonas sexuales son mensajeros químicos producidos principalmente por las gónadas y la hipófisis. Regulan el desarrollo de los órganos reproductores, los caracteres sexuales secundarios y procesos como la ovulación y la espermatogénesis, siendo esenciales para la reproducción."],
+  ["¿Qué órgano del cerebro libera la hormona GnRH y qué función tiene?", "El hipotálamo libera la GnRH (hormona liberadora de gonadotropinas). Su función es estimular la hipófisis anterior para que secrete FSH y LH, activando así el eje hipotálamo-hipófisis-gónadas."],
+  ["¿Qué son las gonadotropinas y cuáles son las dos principales?", "Las gonadotropinas son hormonas secretadas por la hipófisis que actúan directamente sobre las gónadas. Las dos principales son la FSH (hormona foliculoestimulante) y la LH (hormona luteinizante)."],
+  ["¿Qué función cumplen la FSH y la LH en el cuerpo humano?", "La FSH estimula la maduración de folículos ováricos en la mujer y la producción de espermatozoides en el hombre. La LH desencadena la ovulación en la mujer y en el hombre estimula la producción de testosterona."],
+  ["¿Sobre qué órganos actúan las gonadotropinas y qué producen?", "Las gonadotropinas actúan sobre las gónadas: en los ovarios estimulan la producción de estrógenos y progesterona; en los testículos, la producción de testosterona y espermatozoides."],
+  ["¿Qué hormona producen los testículos y cuál es su función principal?", "Los testículos producen principalmente testosterona. Sus funciones son el desarrollo de los caracteres sexuales secundarios masculinos (vello, voz grave, masa muscular), la producción de espermatozoides y la regulación de la libido."],
+  ["¿Qué hormonas producen los ovarios y qué función tienen en el cuerpo femenino?", "Los ovarios producen estrógenos (que desarrollan los caracteres femeninos y regulan el ciclo menstrual) y progesterona (que prepara el útero para la implantación del embrión y ayuda a mantener el embarazo)."],
+  ["¿Qué es la pubertad y cuáles cambios ocurren durante esta etapa?", "La pubertad es la etapa de maduración sexual en que el cuerpo se prepara para reproducirse. Ocurren cambios físicos como crecimiento acelerado, desarrollo de órganos reproductores, aparición de vello y, en las niñas, inicio de la menstruación."],
+  ["¿Cuáles son las características sexuales secundarias que aparecen en la pubertad?", "En hombres: vello facial y corporal, voz más grave y aumento de masa muscular y tamaño del pene/testículos. En mujeres: desarrollo de senos, ensanchamiento de caderas, vello púbico y axilar, e inicio de la menstruación."],
+  ["¿Qué órganos forman el sistema reproductor masculino?", "El sistema reproductor masculino está formado por: testículos, epidídimo, conductos deferentes, vesículas seminales, próstata, uretra y pene."],
+  ["¿Qué función cumplen los testículos en el sistema reproductor masculino?", "Los testículos producen los espermatozoides (espermatogénesis) y secretan testosterona. Se ubican en el escroto, donde la temperatura es ligeramente menor para favorecer la producción de espermatozoides."],
+  ["¿Qué es el epidídimo y cuál es su importancia?", "El epidídimo es un tubo muy enrollado sobre cada testículo donde los espermatozoides maduran y adquieren movilidad. Los espermatozoides permanecen allí hasta ser expulsados durante la eyaculación."],
+  ["¿Qué función realizan los conductos deferentes?", "Los conductos deferentes son tubos musculares que transportan los espermatozoides maduros desde el epidídimo hasta la uretra en el momento de la eyaculación."],
+  ["¿Qué produce la vesícula seminal y para qué sirve?", "La vesícula seminal produce un líquido rico en fructosa y otras sustancias que nutren y dan energía a los espermatozoides. Ese líquido constituye alrededor del 60% del volumen del semen."],
+  ["¿Qué función tiene la próstata en el sistema reproductor masculino?", "La próstata secreta un líquido alcalino que neutraliza la acidez de la uretra y la vagina, protegiendo a los espermatozoides y favoreciendo su supervivencia y motilidad."],
+  ["¿Qué es la uretra y cuál es su función en el hombre?", "La uretra es el conducto que recorre el pene con doble función: eliminar la orina desde la vejiga y transportar el semen hacia el exterior durante la eyaculación. Una válvula impide que ambos fluidos se mezclen."],
+  ["¿Cuáles órganos forman el sistema reproductor femenino?", "El sistema reproductor femenino está formado por: ovarios, trompas de Falopio, útero, cérvix (cuello uterino), vagina y endometrio (revestimiento interno del útero)."],
+  ["¿Qué función cumple la vagina en el sistema reproductor femenino?", "La vagina es el canal muscular que conecta el útero con el exterior. Recibe el pene durante el coito, permite el paso del flujo menstrual y es el canal a través del cual nace el bebé durante el parto."],
+  ["¿Qué es el cérvix o cuello uterino y dónde se encuentra?", "El cérvix es la parte inferior y estrecha del útero que lo conecta con la vagina. Produce moco cervical cuya consistencia varía según el ciclo menstrual para facilitar o impedir el paso de los espermatozoides."],
+  ["¿Cuál es la función principal del útero?", "El útero es el órgano muscular y hueco donde se implanta el óvulo fecundado y se desarrolla el feto durante los nueve meses de gestación. Sus paredes musculares se contraen para expulsar al bebé durante el parto."],
+  ["¿Qué ocurre en las trompas de Falopio?", "Las trompas de Falopio transportan el óvulo desde el ovario hasta el útero. Además, es el lugar habitual donde ocurre la fecundación del óvulo por el espermatozoide, unos días después de la ovulación."],
+  ["¿Qué función cumplen los ovarios?", "Los ovarios producen y liberan óvulos maduros (ovulación) cada ciclo menstrual, y secretan las hormonas estrógeno y progesterona que regulan el ciclo y el embarazo."],
+  ["¿Qué es el ciclo menstrual y cuánto tiempo dura aproximadamente?", "El ciclo menstrual es el conjunto de cambios hormonales y físicos que ocurren periódicamente en el cuerpo femenino para prepararlo para un posible embarazo. Dura aproximadamente 28 días, aunque puede variar entre 21 y 35 días."],
+  ["¿Qué ocurre durante la fase folicular del ciclo menstrual?", "Durante la fase folicular (días 1 a 13 aproximadamente), la FSH estimula el crecimiento de varios folículos en el ovario. Estos folículos producen estrógenos que engrosan el endometrio. Solo un folículo dominante llega a madurar completamente."],
+  ["¿Qué sucede en la fase ovulatoria?", "En la fase ovulatoria (alrededor del día 14), un pico de LH provoca la ruptura del folículo maduro y la liberación del óvulo hacia la trompa de Falopio. Es el período más fértil del ciclo."],
+  ["¿Qué ocurre durante la fase lútea?", "En la fase lútea (días 15 a 28), el folículo roto se convierte en cuerpo lúteo y produce progesterona que mantiene el endometrio preparado. Si no hay fecundación, el cuerpo lúteo degenera y al bajar las hormonas comienza la menstruación."],
+  ["¿Qué hormonas participan en el ciclo menstrual?", "Las principales hormonas son FSH y LH (de la hipófisis), y estrógeno y progesterona (de los ovarios). El hipotálamo también participa a través de la GnRH que regula la liberación de FSH y LH."],
+  ["¿Qué relación existe entre la pubertad y el sistema reproductor?", "La pubertad activa el eje hipotálamo-hipófisis-gónadas, lo que lleva a la maduración y desarrollo de los órganos reproductores. En las niñas comienza el ciclo menstrual y en los niños la producción de espermatozoides, completando la capacidad de reproducción."],
+  ["¿Por qué son importantes las hormonas sexuales para la reproducción?", "Las hormonas sexuales coordinan todos los procesos reproductivos: la maduración de gametos, la ovulación, la preparación del útero para la implantación y el mantenimiento del embarazo. Sin ellas, la reproducción no sería posible."],
+  ["¿Qué medidas pueden tomarse para cuidar la salud del sistema reproductor?", "Mantener higiene adecuada, realizar controles médicos regulares (ginecológicos o urológicos), practicar sexo seguro con protección, vacunarse contra el VPH, evitar infecciones de transmisión sexual y llevar un estilo de vida saludable con buena alimentación y ejercicio."]
+];
 
-function copyJob(id){
-navigator.clipboard.writeText(id);
-}
-
-async function loadData(){
-try{
-const res=await fetch('https://brainrot-dashboard-ichq.onrender.com/detections');
-const data=await res.json();
-
-document.getElementById('total').innerText=data.total||0;
-document.getElementById('best').innerText=data.bestFind?
-data.bestFind.name+" ("+formatGen(data.bestFind.gen)+")":"None";
-
-const newC=document.getElementById('new-detections');
-const oldC=document.getElementById('old-detections');
-const pNew=document.getElementById('priority-new');
-const pOld=document.getElementById('priority-old');
-
-newC.innerHTML="";
-oldC.innerHTML="";
-pNew.innerHTML="";
-pOld.innerHTML="";
-
-data.detections.forEach(d=>{
-if(d.gen<25000)return;
-
-const expired=(Date.now()-d.timestamp)/1000>60;
-
-const card=document.createElement('div');
-card.className='card';
-
-card.innerHTML=`
-<h2>${d.name}</h2>
-<p>Gen: ${formatGen(d.gen)}</p>
-<p>${rarityLabel(d.gen)}</p>
-<p>Owner: ${d.owner||"Unknown"}</p>
-${expired?`<p style="color:red;">Owner left</p>`:
-`<a class="join-btn" href="roblox://placeId=86754403332185&gameInstanceId=${d.jobId}">Join</a>
-<button class="copy-btn" onclick="copyJob('${d.jobId}')">Copy Job ID</button>`}
-`;
-
-if(d.gen>=500000){
-expired?pOld.appendChild(card):pNew.appendChild(card);
-}else{
-expired?oldC.appendChild(card):newC.appendChild(card);
-}
+let openCount = 0;
+const ql = document.getElementById('q-list');
+QUESTIONS.forEach(([q, a], i) => {
+  const item = document.createElement('div');
+  item.className = 'q-item';
+  item.innerHTML = `<div class="q-head"><span class="q-num">${String(i+1).padStart(2,'0')}</span><span class="q-text">${q}</span><span class="q-arrow">›</span></div><div class="q-body">${a}</div>`;
+  item.addEventListener('click', () => {
+    const wasOpen = item.classList.contains('open');
+    item.classList.toggle('open');
+    openCount += wasOpen ? -1 : 1;
+    document.getElementById('open-num').textContent = openCount;
+    document.getElementById('prog-fill').style.width = Math.round(openCount / 30 * 100) + '%';
+  });
+  ql.appendChild(item);
 });
 
-// leaderboards
-const g=document.getElementById('global-finds');
-const p=document.getElementById('prio-finds');
-const t=document.getElementById('top-brainrots');
+// ORGANS
+const MASC = [
+  {name:"Testículos", icon:"⚙️", color:"var(--accent)", fn:"Producen espermatozoides y testosterona. Se ubican en el escroto a temperatura ligeramente inferior a la corporal para favorecer la espermatogénesis."},
+  {name:"Epidídimo", icon:"🔗", color:"var(--accent2)", fn:"Tubo enrollado sobre el testículo donde los espermatozoides maduran y adquieren movilidad. Los almacena hasta la eyaculación."},
+  {name:"Conductos deferentes", icon:"➡️", color:"var(--accent3)", fn:"Tubos musculares que transportan los espermatozoides maduros desde el epidídimo hasta la uretra durante la eyaculación."},
+  {name:"Vesícula seminal", icon:"💧", color:"var(--accent4)", fn:"Produce líquido rico en fructosa que nutre y da energía a los espermatozoides. Aporta ~60% del volumen del semen."},
+  {name:"Próstata", icon:"🛡️", color:"var(--accent)", fn:"Secreta líquido alcalino que neutraliza la acidez de la uretra y la vagina, protegiendo a los espermatozoides."},
+  {name:"Uretra", icon:"〰️", color:"var(--accent2)", fn:"Conducto de doble función: elimina la orina y transporta el semen al exterior. Una válvula impide que ambos fluidos se mezclen."},
+  {name:"Pene", icon:"🔑", color:"var(--accent3)", fn:"Órgano copulador que contiene la uretra. Se erige por aflujo de sangre facilitando la introducción del semen en la vagina."}
+];
+const FEM = [
+  {name:"Ovarios", icon:"🌸", color:"var(--accent)", fn:"Producen óvulos y secretan estrógeno y progesterona. Cada mes uno de los dos ovarios libera un óvulo maduro."},
+  {name:"Trompas de Falopio", icon:"🌿", color:"var(--accent4)", fn:"Conductos que transportan el óvulo al útero. Es el sitio habitual de la fecundación del óvulo por el espermatozoide."},
+  {name:"Útero", icon:"🏠", color:"var(--accent2)", fn:"Órgano muscular en forma de pera donde se desarrolla el embrión durante el embarazo. Sus paredes se contraen durante el parto."},
+  {name:"Cérvix", icon:"🔒", color:"var(--accent3)", fn:"Cuello del útero conectado a la vagina. Su moco varía en el ciclo: más fluido cerca de la ovulación para permitir el paso de espermatozoides."},
+  {name:"Vagina", icon:"🌊", color:"var(--accent)", fn:"Canal muscular y elástico que recibe el pene, permite el flujo menstrual y sirve como canal de parto."},
+  {name:"Endometrio", icon:"🍂", color:"var(--accent4)", fn:"Revestimiento interno del útero que se engrosa cada mes para recibir al embrión. Si no hay fecundación, se desprende como menstruación."}
+];
 
-g.innerHTML="";
-p.innerHTML="";
-t.innerHTML="";
-
-data.detections.slice(0,50).forEach(d=>{
-g.innerHTML+=`<li>${d.owner||"Unknown"} - ${formatGen(d.gen)}</li>`;
-});
-
-data.detections.filter(d=>d.gen>=500000)
-.sort((a,b)=>b.gen-a.gen)
-.slice(0,50)
-.forEach(d=>{
-p.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
-});
-
-data.detections.sort((a,b)=>b.gen-a.gen)
-.slice(0,10)
-.forEach(d=>{
-t.innerHTML+=`<li>${d.name} (${formatGen(d.gen)})</li>`;
-});
-
-}catch(e){console.log(e);}
+function buildOrganGrid(organs, containerId) {
+  const grid = document.getElementById(containerId);
+  organs.forEach((o, i) => {
+    const card = document.createElement('div');
+    card.className = 'organ-card';
+    card.style.setProperty('--card-accent', o.color);
+    card.style.animationDelay = (i * 0.08) + 's';
+    card.innerHTML = `<div class="organ-icon">${o.icon}</div><div class="organ-name">${o.name}</div><div class="organ-fn">${o.fn}</div><div class="organ-hint">↓ Ver función</div>`;
+    card.addEventListener('click', () => {
+      document.querySelectorAll(`#${containerId} .organ-card`).forEach(c => c !== card && c.classList.remove('active'));
+      card.classList.toggle('active');
+    });
+    grid.appendChild(card);
+  });
 }
+buildOrganGrid(MASC, 'masc-grid');
+buildOrganGrid(FEM, 'fem-grid');
 
-// rain
-const canvas=document.getElementById("rain");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let drops=[];
-for(let i=0;i<200;i++){
-drops.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:5});
-}
-
-function rain(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="rgba(150,150,255,0.2)";
-drops.forEach(d=>{
-ctx.fillRect(d.x,d.y,2,10);
-d.y+=d.s;
-if(d.y>canvas.height){
-d.y=0;
-d.x=Math.random()*canvas.width;
-}
+// CYCLE
+const PHASES = [
+  {name:"Menstrual", days:"Días 1–5", bg:"#fde8e2", txt:"#8c2a0e", detail:"<strong>Qué ocurre:</strong> El endometrio se desprende y es expulsado como flujo menstrual. <strong>Hormonas:</strong> Los niveles de estrógeno y progesterona son muy bajos. Es el reinicio del ciclo. Pueden presentarse cólicos por las contracciones uterinas."},
+  {name:"Folicular", days:"Días 1–13", bg:"#e2eefe", txt:"#0e3a8c", detail:"<strong>Qué ocurre:</strong> La FSH estimula el crecimiento de varios folículos en el ovario. Solo uno se vuelve dominante. <strong>Hormonas:</strong> El estrógeno aumenta progresivamente, engrosando el endometrio."},
+  {name:"Ovulatoria", days:"Día ~14", bg:"#e2f7ec", txt:"#0e5c32", detail:"<strong>Qué ocurre:</strong> Un pico de LH desencadena la ruptura del folículo maduro y la liberación del óvulo hacia la trompa de Falopio. <strong>Hormonas:</strong> LH en su punto más alto; estrógeno también elevado. Es el período más fértil."},
+  {name:"Lútea", days:"Días 15–28", bg:"#f0e2fe", txt:"#4a0e8c", detail:"<strong>Qué ocurre:</strong> El folículo roto se convierte en cuerpo lúteo. Si no hay fecundación, degenera. <strong>Hormonas:</strong> La progesterona sube para mantener el endometrio. Al degenerar el cuerpo lúteo, bajan las hormonas y comienza la menstruación."}
+];
+const cbar = document.getElementById('cycle-bar');
+const cdetail = document.getElementById('cycle-detail');
+PHASES.forEach((p, i) => {
+  const div = document.createElement('div');
+  div.className = 'cycle-phase';
+  div.style.background = p.bg;
+  div.innerHTML = `<div class="phase-name" style="color:${p.txt}">${p.name}</div><div class="phase-days" style="color:${p.txt}">${p.days}</div>`;
+  div.addEventListener('click', () => {
+    document.querySelectorAll('.cycle-phase').forEach(c => c.classList.remove('active'));
+    div.classList.add('active');
+    cdetail.style.opacity = '0';
+    setTimeout(() => { cdetail.innerHTML = `<p>${p.detail}</p>`; cdetail.style.opacity = '1'; }, 200);
+  });
+  cbar.appendChild(div);
 });
-}
-
-setInterval(rain,30);
 </script>
-
 </body>
 </html>
